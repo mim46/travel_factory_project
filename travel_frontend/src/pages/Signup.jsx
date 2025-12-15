@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../services/authService";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../redux/slices/authSlice";
 import logo from "../assets/images/logo.png";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({
     name: "",
@@ -53,20 +56,19 @@ export default function Signup() {
   const handleSubmit = async () => {
     if (!validate()) return;
 
-    try {
-      await registerUser({
-        name: form.name,
-        email: form.email,
-        password: form.password,
-      });
+    const result = await dispatch(registerUser({
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      phone: form.phone,
+      gender: form.gender,
+      dob: form.dob,
+      address: form.address,
+    }));
 
+    if (result.meta.requestStatus === 'fulfilled') {
       alert("Signup successful! Please login now.");
-
-      navigate("/login"); // redirect to LOGIN page
-
-    } catch (err) {
-      console.error(err);
-      alert("Signup failed. Try again.");
+      navigate("/login");
     }
   };
 
@@ -200,13 +202,19 @@ export default function Signup() {
           <span className="text-sm">I agree to the Terms & Conditions.</span>
         </div>
 
+        {/* Error Display */}
+        {error && (
+          <p className="text-red-600 text-sm font-medium text-center mt-3">{error}</p>
+        )}
+
         {/* Submit Button */}
         <div className="flex justify-center">
           <button
             onClick={handleSubmit}
-            className="mt-5 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded-lg shadow-md text-sm w-1/2"
+            disabled={loading}
+            className="mt-5 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded-lg shadow-md text-sm w-1/2 disabled:opacity-50"
           >
-            Create Account
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </div>
 

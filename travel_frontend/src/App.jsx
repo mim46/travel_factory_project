@@ -33,6 +33,8 @@ import Users from "./admin/pages/Users";
 import Packages from "./admin/pages/Packages";
 import Bookings from "./admin/pages/Bookings";
 import Messages from "./admin/pages/Messages";
+import AdminDestinations from "./admin/pages/Destinations";
+import Reports from "./admin/pages/Reports";
 
 export default function App() {
   return (
@@ -48,6 +50,8 @@ export default function App() {
           <Route path="packages" element={<Packages />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="messages" element={<Messages />} />
+          <Route path="destinations" element={<AdminDestinations />} />
+          <Route path="reports" element={<Reports />} />
         </Route>
 
         {/* =============================

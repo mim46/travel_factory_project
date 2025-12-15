@@ -1,41 +1,30 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../redux/slices/authSlice";
 import logo from "../assets/images/logo.png";
-import { loginUser } from "../services/authService";
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
 
-    try {
-      // API hit
-      const res = await loginUser(email, password);
+    const result = await dispatch(loginUser({ email, password }));
 
-      // Save token + user + role
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      localStorage.setItem("role", res.role);
-
+    if (result.meta.requestStatus === 'fulfilled') {
       alert("Login successful!");
 
-      // ⭐ ROLE BASED REDIRECT
-      if (res.role === "admin") {
-        window.location.href = "/admin";
+      // Role based redirect
+      if (result.payload.role === "admin") {
+        navigate("/admin");
       } else {
-        window.location.href = "/";
-      }
-
-    } catch (err) {
-      console.error(err);
-
-      if (err.response?.status === 401) {
-        setError("Invalid email or password.");
-      } else {
-        setError("Something went wrong. Try again.");
+        navigate("/");
       }
     }
   };
@@ -87,10 +76,11 @@ export default function Login() {
           <div className="flex justify-center">
             <button
               type="submit"
+              disabled={loading}
               className="w-1/2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold 
-                py-2 rounded-lg shadow-md transition"
+                py-2 rounded-lg shadow-md transition disabled:opacity-50"
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </div>
         </form>

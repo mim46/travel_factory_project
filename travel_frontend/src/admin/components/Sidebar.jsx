@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope } from "react-icons/fa";
+import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMapMarkerAlt, FaChartLine } from "react-icons/fa";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -53,6 +53,24 @@ export default function Sidebar() {
         ${isActive("/admin/messages") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaEnvelope /> Messages
+      </Link>
+
+      {/* Destinations */}
+      <Link
+        to="/admin/destinations"
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        ${isActive("/admin/destinations") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+      >
+        <FaMapMarkerAlt /> Destinations
+      </Link>
+
+      {/* Reports */}
+      <Link
+        to="/admin/reports"
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        ${isActive("/admin/reports") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+      >
+        <FaChartLine /> Reports
       </Link>
 
     </div>
