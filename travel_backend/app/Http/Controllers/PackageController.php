@@ -11,9 +11,9 @@ class PackageController extends Controller
      * 🔹 LIST ALL PACKAGES (User + Admin)
      */
     public function index()
-{
-    return response()->json(Package::all(), 200);
-}
+    {
+        return response()->json(Package::all(), 200);
+    }
 
 
     /**
@@ -25,19 +25,17 @@ class PackageController extends Controller
             'title' => 'required|string|max:255',
             'country' => 'required|string|max:255',
             'city' => 'nullable|string|max:255',
+            'package_type' => 'required|in:domestic,international,budget',
+            'duration' => 'required|string',
             'description' => 'required|string',
             'image' => 'nullable|string',
-            'price' => 'required|numeric'
+            'price' => 'required|numeric',
+            'itinerary' => 'nullable|string',
+            'inclusions' => 'nullable|string',
+            'exclusions' => 'nullable|string',
         ]);
 
-        $package = Package::create([
-            'title' => $request->title,
-            'country' => $request->country,
-            'city' => $request->city,
-            'description' => $request->description,
-            'image' => $request->image,
-            'price' => $request->price,
-        ]);
+        $package = Package::create($request->all());
 
         return response()->json([
             'message' => 'Package created successfully!',
@@ -78,9 +76,14 @@ class PackageController extends Controller
             'title' => 'required|string|max:255',
             'country' => 'required|string|max:255',
             'city' => 'nullable|string|max:255',
+            'package_type' => 'required|in:domestic,international,budget',
+            'duration' => 'required|string',
             'description' => 'required|string',
             'image' => 'nullable|string',
-            'price' => 'required|numeric'
+            'price' => 'required|numeric',
+            'itinerary' => 'nullable|string',
+            'inclusions' => 'nullable|string',
+            'exclusions' => 'nullable|string',
         ]);
 
         $package->update($request->all());

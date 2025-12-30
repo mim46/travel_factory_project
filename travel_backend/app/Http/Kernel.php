@@ -61,5 +61,8 @@ class Kernel extends HttpKernel
 
         // ⭐ Sanctum Auth Middleware (Required for token auth)
         'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        
+        // ⭐ Role Middleware (Spatie)
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
 }
