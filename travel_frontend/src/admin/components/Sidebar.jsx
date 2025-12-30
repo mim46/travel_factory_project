@@ -1,14 +1,24 @@
-import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMapMarkerAlt, FaChartLine } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMoneyBillWave, FaChartLine, FaCog, FaSignOutAlt } from "react-icons/fa";
+import logo from "../../assets/images/logo.png";
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   return (
     <div className="w-64 min-h-screen bg-[#E8F8FF] text-gray-800 p-6 space-y-6 border-r border-blue-100">
 
-      <h2 className="text-2xl font-bold mb-10 text-[#1C7DA2]">Admin Panel</h2>
+      <div className="mb-10 flex justify-center">
+        <img src={logo} alt="Travel Factory Logo" className="w-20 h-auto object-contain" />
+      </div>
 
       {/* Dashboard */}
       <Link
@@ -55,13 +65,13 @@ export default function Sidebar() {
         <FaEnvelope /> Messages
       </Link>
 
-      {/* Destinations */}
+      {/* Payments */}
       <Link
-        to="/admin/destinations"
+        to="/admin/payments"
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/destinations") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+        ${isActive("/admin/payments") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
-        <FaMapMarkerAlt /> Destinations
+        <FaMoneyBillWave /> Payments
       </Link>
 
       {/* Reports */}
@@ -72,6 +82,23 @@ export default function Sidebar() {
       >
         <FaChartLine /> Reports
       </Link>
+
+      {/* Settings */}
+      <Link
+        to="/admin/settings"
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        ${isActive("/admin/settings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+      >
+        <FaCog /> Settings
+      </Link>
+
+      {/* Sign Out */}
+      <button
+        onClick={handleSignOut}
+        className="flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition hover:bg-red-100 text-red-600 w-full"
+      >
+        <FaSignOutAlt /> Sign Out
+      </button>
 
     </div>
   );
