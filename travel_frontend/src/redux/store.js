@@ -6,16 +6,20 @@ import userReducer from './slices/userSlice';
 import queryReducer from './slices/querySlice';
 import destinationReducer from './slices/destinationSlice';
 import reportReducer from './slices/reportSlice';
+import messageReducer from './slices/messageSlice';
+
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     packages: packageReducer,
     bookings: bookingReducer,
-    users: userReducer,
     query: queryReducer,
     destinations: destinationReducer,
     reports: reportReducer,
+    user: userReducer, // ⭐ Add this
+    messages: messageReducer, // ⭐ Add this
+
   },
 });
 

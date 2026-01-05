@@ -54,7 +54,7 @@ export default function BudgetHome() {
                   to={`/package-details/${pkg.id}`}
                   className="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-800 transition"
                 >
-                  View Itinerary
+                  View Details
                 </Link>
               </div>
             </div>

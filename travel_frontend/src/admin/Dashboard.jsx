@@ -5,6 +5,7 @@ import { fetchPackages } from "../redux/slices/packageSlice";
 import { fetchAllBookings } from "../redux/slices/bookingSlice";
 import { fetchAllUsers } from "../redux/slices/userSlice";
 import { fetchAllQueries } from "../redux/slices/querySlice";
+import { fetchAllMessages } from "../redux/slices/messageSlice"; // ⭐ Add this
 import StatCard from "./components/StatCard";
 import { FaUsers, FaBox, FaShoppingCart, FaEnvelope } from "react-icons/fa";
 
@@ -25,8 +26,9 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { packages } = useSelector((state) => state.packages);
   const { bookings } = useSelector((state) => state.bookings);
-  const { users } = useSelector((state) => state.users);
+  const { users } = useSelector((state) => state.user);  // state.user.users
   const { queries } = useSelector((state) => state.query);
+  const { adminMessages } = useSelector((state) => state.messages); // ⭐ Add this
 
   // Dynamic greeting based on time
   const getGreeting = () => {
@@ -77,6 +79,7 @@ export default function Dashboard() {
     dispatch(fetchAllBookings());
     dispatch(fetchAllUsers());
     dispatch(fetchAllQueries());
+    dispatch(fetchAllMessages()); // ⭐ Add this
   }, [dispatch]);
 
   return (
@@ -98,7 +101,7 @@ export default function Dashboard() {
           <StatCard title="Bookings" value={bookings.length} icon={<FaShoppingCart />} />
         </div>
         <div onClick={() => navigate('/admin/messages')} className="cursor-pointer">
-          <StatCard title="Messages" value={queries.length} icon={<FaEnvelope />} />
+          <StatCard title="Messages" value={adminMessages.length} icon={<FaEnvelope />} /> {/* ⭐ Changed from queries.length to adminMessages.length */}
         </div>
       </div>
 

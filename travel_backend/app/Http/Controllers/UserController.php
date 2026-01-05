@@ -91,4 +91,60 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deleted successfully!']);
     }
+
+
+    // Get current user profile
+    public function profile(Request $request)
+    {
+        $user = $request->user()->load('bookings');
+        return response()->json($user);
+    }
+
+    // Update current user profile
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $request->user()->id,
+            'phone' => 'nullable|string',
+            'gender' => 'nullable|string',
+            'dob' => 'nullable|date',
+            'address' => 'nullable|string',
+        ]);
+
+        $user = $request->user();
+        $user->update($request->only(['name', 'email', 'phone', 'gender', 'dob', 'address']));
+
+        return response()->json([
+            'message' => 'Profile updated successfully!',
+            'user' => $user,
+        ]);
+    }
+
+    // Update password
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        // Check if current password is correct
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Current password is incorrect'
+            ], 400);
+        }
+
+        // Update password
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'message' => 'Password updated successfully!'
+        ]);
+    }
 }

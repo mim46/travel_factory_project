@@ -1,9 +1,33 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logoutUser } from "../redux/slices/authSlice";
 import logo from "../assets/images/logo.png";
+import { FaUser } from "react-icons/fa";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  // Get auth state
+  const { user, token, role } = useSelector((state) => state.auth);
+  const isLoggedIn = !!token;
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    alert("✅ Logged out successfully!");
+    navigate("/");
+  };
+
+  // Role-based dashboard navigation
+  const handleDashboardClick = () => {
+    if (role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/user");
+    }
+  };
 
   return (
     <header className="relative bg-blue-50 border-b shadow-sm overflow-visible">
@@ -50,15 +74,15 @@ export default function Navbar() {
 
       {/* NAVBAR CONTENT */}
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center h-20">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center h-20 gap-8">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="grid grid-cols-[auto_1fr] items-center gap-3">
             <img src={logo} alt="Travel Factory" className="h-12 w-auto object-contain" />
           </Link>
 
           {/* Menu */}
-          <nav className="hidden md:flex items-center gap-8 text-[15px] font-medium">
+          <nav className="hidden md:grid grid-flow-col auto-cols-max gap-8 text-[15px] font-medium justify-center">
             <Link to="/" className="hover:text-blue-600">Home</Link>
             <Link to="/destinations" className="hover:text-blue-600">Destinations</Link>
             <Link to="/query" className="hover:text-blue-600">Query</Link>
@@ -67,7 +91,7 @@ export default function Navbar() {
             {/* ABOUT US — SCROLL TO SECTION */}
             <button
               onClick={() =>
-                document.getElementById("about").scrollIntoView({ behavior: "smooth" })
+                document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })
               }
               className="hover:text-blue-600"
             >
@@ -77,31 +101,101 @@ export default function Navbar() {
             <Link to="/contact" className="hover:text-blue-600">Contact</Link>
           </nav>
 
-          {/* LOGIN */}
+          {/* RIGHT SIDE - Conditional rendering */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              to="/login"
-              className="bg-yellow-300 hover:bg-yellow-500 text-blue-700 px-5 py-2 rounded-md text-sm font-semibold shadow"
-            >
-              Sign In
-            </Link>
+            {isLoggedIn ? (
+              // Logged in: Show user info + logout (dashboard style)
+              <>
+                <button
+                  onClick={handleDashboardClick}
+                  className="flex items-center gap-3 hover:opacity-80 transition cursor-pointer"
+                >
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-lg font-bold border border-blue-300">
+                    {user?.name?.charAt(0).toUpperCase() || <FaUser />}
+                  </div>
+                  <span className="text-gray-700 font-medium">{user?.name}</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md text-sm font-semibold shadow transition"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              // Not logged in: Show Sign In button
+              <Link
+                to="/login"
+                className="bg-yellow-300 hover:bg-yellow-500 text-blue-700 px-5 py-2 rounded-md text-sm font-semibold shadow transition"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
 
-          {/* HAMBURGER */}
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setOpen(!open)}
-            className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            className="md:hidden text-blue-600 text-2xl"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor">
-              {open ? (
-                <path strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            {open ? "✕" : "☰"}
           </button>
-
         </div>
+
+        {/* Mobile Menu */}
+        {open && (
+          <div className="md:hidden py-4 space-y-3 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg mt-2 px-6">
+            <Link to="/" className="block hover:text-blue-600">Home</Link>
+            <Link to="/destinations" className="block hover:text-blue-600">Destinations</Link>
+            <Link to="/query" className="block hover:text-blue-600">Query</Link>
+            <Link to="/gallery" className="block hover:text-blue-600">Gallery</Link>
+
+            <button
+              onClick={() => {
+                document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+                setOpen(false);
+              }}
+              className="block hover:text-blue-600 w-full text-left"
+            >
+              About Us
+            </button>
+
+            <Link to="/contact" className="block hover:text-blue-600">Contact</Link>
+
+            {isLoggedIn ? (
+              <>
+                <button
+                  onClick={() => {
+                    handleDashboardClick();
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-3 py-2 cursor-pointer"
+                >
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-lg font-bold border border-blue-300">
+                    {user?.name?.charAt(0).toUpperCase() || <FaUser />}
+                  </div>
+                  <span className="text-gray-700 font-medium">{user?.name}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setOpen(false);
+                  }}
+                  className="block w-full text-left bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md text-sm font-semibold"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="block bg-yellow-300 hover:bg-yellow-500 text-blue-700 px-5 py-2 rounded-md text-sm font-semibold text-center"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

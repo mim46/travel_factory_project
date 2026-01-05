@@ -5,8 +5,7 @@ import { FaEye, FaTrash, FaSearch, FaPlus, FaEdit, FaTimes } from "react-icons/f
 
 export default function Users() {
   const dispatch = useDispatch();
-  const { users, loading, error } = useSelector((state) => state.users);
-  
+const { users, loading, error } = useSelector((state) => state.user);  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);

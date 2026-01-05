@@ -20,6 +20,9 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       console.log('🔵 Login attempt:', { email, password });
+      
+      // ❌ Remove CSRF cookie fetch - না দরকার for token auth
+      
       const response = await api.post('/login', { email, password });
       console.log('✅ Login response:', response.data);
       
@@ -46,6 +49,9 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       console.log('🔵 Registration attempt:', userData);
+      
+      // ❌ Remove CSRF cookie fetch
+      
       const response = await api.post('/register', userData);
       console.log('✅ Registration response:', response.data);
       return response.data;
@@ -53,7 +59,6 @@ export const registerUser = createAsyncThunk(
       console.error('❌ Registration Error:', error);
       console.error('Error response:', error.response);
       if (error.response) {
-        // Handle validation errors
         if (error.response.data.errors) {
           const errors = Object.values(error.response.data.errors).flat();
           return rejectWithValue(errors.join(', '));
@@ -75,14 +80,12 @@ export const logoutUser = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Clear localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('role');
       
       return null;
     } catch (error) {
-      // Clear localStorage even if API call fails
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('role');

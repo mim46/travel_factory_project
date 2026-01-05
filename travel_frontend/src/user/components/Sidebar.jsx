@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../redux/slices/authSlice";
-import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMoneyBillWave, FaChartLine, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaTicketAlt, FaUser, FaCreditCard, FaCog, FaSignOutAlt, FaEnvelope } from "react-icons/fa";
 import logo from "../../assets/images/logo.png";
 
 export default function Sidebar() {
@@ -26,72 +26,54 @@ export default function Sidebar() {
 
       {/* Dashboard */}
       <Link
-        to="/admin"
+        to="/user"
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+        ${isActive("/user") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaHome /> Dashboard
       </Link>
 
-      {/* Users */}
+      {/* My Profile */}
       <Link
-        to="/admin/users"
+        to="/user/profile"
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/users") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+        ${isActive("/user/profile") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
-        <FaUsers /> Users
+        <FaUser /> My Profile
       </Link>
 
-      {/* Packages */}
+      {/* My Bookings */}
       <Link
-        to="/admin/packages"
+        to="/user/bookings"
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/packages") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+        ${isActive("/user/bookings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
-        <FaBox /> Packages
-      </Link>
-
-      {/* Bookings */}
-      <Link
-        to="/admin/bookings"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/bookings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-      >
-        <FaShoppingCart /> Bookings
+        <FaTicketAlt /> My Bookings
       </Link>
 
       {/* Messages */}
       <Link
-        to="/admin/messages"
+        to="/user/messages"
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/messages") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+        ${isActive("/user/messages") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaEnvelope /> Messages
       </Link>
 
-      {/* Payments */}
+      {/* Payment History */}
       <Link
-        to="/admin/payments"
+        to="/user/payment-history"
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/payments") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+        ${isActive("/user/payment-history") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
-        <FaMoneyBillWave /> Payments
-      </Link>
-
-      {/* Reports */}
-      <Link
-        to="/admin/reports"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/reports") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-      >
-        <FaChartLine /> Reports
+        <FaCreditCard /> Payment History
       </Link>
 
       {/* Settings */}
       <Link
-        to="/admin/settings"
+        to="/user/settings"
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/settings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+        ${isActive("/user/settings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaCog /> Settings
       </Link>

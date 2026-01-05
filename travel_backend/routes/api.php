@@ -12,6 +12,7 @@ use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\MessageController;
 
 
 /*
@@ -54,9 +55,21 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+  
+    // User Profile Management
+    Route::get('/profile', [UserController::class, 'profile']);
+    Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::put('/profile/password', [UserController::class, 'updatePassword']);
+
     // User Bookings
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::get('/my-bookings', [BookingController::class, 'myBookings']);
+
+    // User Messages
+Route::get('/my-messages', [MessageController::class, 'myMessages']);
+Route::post('/messages', [MessageController::class, 'store']);
+Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
+
 
     /*
     |--------------------------------------------------------------------------
@@ -88,12 +101,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/queries', [QueryController::class, 'index']);
         Route::patch('/admin/queries/{id}/read', [QueryController::class, 'markAsRead']);
         Route::delete('/admin/queries/{id}', [QueryController::class, 'destroy']);
+        
 
-        // Contact Messages Management
-        Route::get('/admin/messages', [ContactMessageController::class, 'index']);
-        Route::patch('/admin/messages/{id}/read', [ContactMessageController::class, 'markAsRead']);
-        Route::delete('/admin/messages/{id}', [ContactMessageController::class, 'destroy']);
+        // Admin Messages Management (User Messages)
+        Route::get('/admin/messages', [MessageController::class, 'index']);
+        Route::post('/admin/messages/{id}/reply', [MessageController::class, 'reply']);
+        Route::delete('/admin/messages/{id}', [MessageController::class, 'destroy']);
 
+        // Contact Messages Management (Contact Form Messages)
+        Route::get('/admin/contact-messages', [ContactMessageController::class, 'index']); // Changed endpoint
+        Route::patch('/admin/contact-messages/{id}/read', [ContactMessageController::class, 'markAsRead']);
+        Route::delete('/admin/contact-messages/{id}', [ContactMessageController::class, 'destroy']);
+
+        
         // Destinations Management
         Route::post('/admin/destinations', [DestinationController::class, 'store']);
         Route::put('/admin/destinations/{id}', [DestinationController::class, 'update']);

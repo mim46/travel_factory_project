@@ -18,19 +18,19 @@ export default function Login() {
     const result = await dispatch(loginUser({ email, password }));
 
     if (result.meta.requestStatus === 'fulfilled') {
-      alert("Login successful!");
+      alert("✅ Login successful!");
 
       // Role based redirect
       if (result.payload.role === "admin") {
-        navigate("/admin");
+        navigate("/admin"); // Admin → Admin Dashboard
       } else {
-        navigate("/");
+        navigate("/"); // User → Landing Page
       }
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-300 to-yellow-200 p-4">
+    <div className="min-h-screen grid place-items-center bg-gradient-to-b from-blue-300 to-yellow-200 p-4">
 
       <img src={logo} alt="Logo" className="h-24 w-auto mb-6 drop-shadow-xl" />
 
@@ -46,7 +46,7 @@ export default function Login() {
           <p className="text-red-600 mb-3 text-sm font-medium">{error}</p>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="grid gap-4">
           <input
             type="email"
             placeholder="Email"
@@ -73,7 +73,7 @@ export default function Login() {
             </a>
           </div>
 
-          <div className="flex justify-center">
+          <div className="grid place-items-center">
             <button
               type="submit"
               disabled={loading}
