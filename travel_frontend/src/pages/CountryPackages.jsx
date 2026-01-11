@@ -52,9 +52,9 @@ export default function CountryPackages() {
               className="bg-white rounded-xl shadow hover:shadow-xl overflow-hidden transition"
             >
               <img 
-                src={pkg.image || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=60"} 
+                src={pkg.image ? `http://localhost:8000/${pkg.image}` : "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=60"} 
                 alt={pkg.title} 
-                className="w-full h-60 object-cover" 
+                className="w-full h-48 object-cover" 
               />
 
               <div className="p-6">

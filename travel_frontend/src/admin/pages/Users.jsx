@@ -12,6 +12,7 @@ const { users, loading, error } = useSelector((state) => state.user);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editUser, setEditUser] = useState(null);
+  const [viewMode, setViewMode] = useState("latest"); // "all", "latest", or "recent-bookings"
   
   const [formData, setFormData] = useState({
     name: "",
@@ -130,15 +131,30 @@ const { users, loading, error } = useSelector((state) => state.user);
     });
   };
 
-  // Filter users
+  // Filter users and sort by newest first
   const filteredUsers = users?.filter((user) => 
     user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.phone?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ).sort((a, b) => b.id - a.id);
 
   // Calculate stats
   const totalBookings = users?.reduce((sum, user) => sum + (user.bookings_count || 0), 0) || 0;
+
+  // Get latest 5 users
+  const latestUsers = users?.slice(0, 5) || [];
+
+  // Get users with bookings (latest 5)
+  const usersWithBookings = users?.filter(user => user.bookings_count > 0)
+    .sort((a, b) => b.id - a.id)
+    .slice(0, 5) || [];
+
+  // Determine what to display
+  const displayUsers = viewMode === "recent-bookings" 
+    ? usersWithBookings 
+    : viewMode === "latest" 
+    ? latestUsers 
+    : filteredUsers;
 
   return (
     <div>
@@ -156,7 +172,12 @@ const { users, loading, error } = useSelector((state) => state.user);
       {/* Stats Cards - Compact Dashboard Style */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Total Users */}
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-5 rounded-lg shadow-lg">
+        <div 
+          onClick={() => setViewMode("all")}
+          className={`bg-gradient-to-r from-blue-500 to-blue-600 p-5 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
+            viewMode === "all" ? "ring-4 ring-blue-300" : ""
+          }`}
+        >
           <div className="flex items-center justify-between text-white">
             <div>
               <p className="text-blue-100 text-xs font-medium mb-1">Total Users</p>
@@ -171,7 +192,12 @@ const { users, loading, error } = useSelector((state) => state.user);
         </div>
 
         {/* Total Bookings */}
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-5 rounded-lg shadow-lg">
+        <div 
+          onClick={() => setViewMode("recent-bookings")}
+          className={`bg-gradient-to-r from-purple-500 to-purple-600 p-5 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
+            viewMode === "recent-bookings" ? "ring-4 ring-purple-300" : ""
+          }`}
+        >
           <div className="flex items-center justify-between text-white">
             <div>
               <p className="text-purple-100 text-xs font-medium mb-1">Total Bookings</p>
@@ -205,9 +231,15 @@ const { users, loading, error } = useSelector((state) => state.user);
       {/* Users Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="px-6 py-4 bg-gray-50 border-b">
-          <h3 className="text-lg font-semibold text-gray-800">All Users</h3>
+          <h3 className="text-lg font-semibold text-gray-800">
+            {viewMode === "recent-bookings" 
+              ? "Latest 5 Users with Bookings" 
+              : viewMode === "latest" 
+              ? "Latest 5 Users" 
+              : "All Users"}
+          </h3>
           <p className="text-sm text-gray-600 mt-0.5">
-            {filteredUsers?.length || 0} user{filteredUsers?.length !== 1 ? 's' : ''} found
+            {displayUsers?.length || 0} user{displayUsers?.length !== 1 ? 's' : ''} found
           </p>
         </div>
 
@@ -220,16 +252,21 @@ const { users, loading, error } = useSelector((state) => state.user);
           <div className="p-12 text-center">
             <p className="text-red-600">{error}</p>
           </div>
-        ) : filteredUsers?.length === 0 ? (
+        ) : displayUsers?.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-gray-600">No users found</p>
+            <p className="text-gray-600">
+              {viewMode === "recent-bookings" 
+                ? "No users with bookings found" 
+                : viewMode === "latest" 
+                ? "No users found" 
+                : "No users found"}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">ID</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Email</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Phone</th>
@@ -240,9 +277,8 @@ const { users, loading, error } = useSelector((state) => state.user);
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredUsers?.map((user) => (
+                {displayUsers?.map((user) => (
                   <tr key={user.id} className="hover:bg-blue-50 transition">
-                    <td className="px-4 py-3 text-sm text-gray-700">#{user.id}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center">
                         <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">

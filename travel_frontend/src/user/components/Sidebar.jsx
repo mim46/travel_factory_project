@@ -69,15 +69,6 @@ export default function Sidebar() {
         <FaCreditCard /> Payment History
       </Link>
 
-      {/* Settings */}
-      <Link
-        to="/user/settings"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/user/settings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-      >
-        <FaCog /> Settings
-      </Link>
-
       {/* Sign Out */}
       <button
         onClick={handleSignOut}

@@ -22,6 +22,7 @@ export default function Packages() {
   const [editData, setEditData] = useState(null);
   const [viewData, setViewData] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(null);
+  const [viewMode, setViewMode] = useState("latest"); // "all", "latest", "domestic", "international", "budget"
 
   useEffect(() => {
     dispatch(fetchPackages());
@@ -79,6 +80,25 @@ export default function Packages() {
   const internationalCount = packages.filter(p => p.package_type === "international").length;
   const budgetCount = packages.filter(p => p.package_type === "budget").length;
 
+  // Get latest 5 packages
+  const latestPackages = packages.slice(0, 5);
+
+  // Get packages by type
+  const domesticPackages = packages.filter(p => p.package_type === "domestic").slice(0, 5);
+  const internationalPackages = packages.filter(p => p.package_type === "international").slice(0, 5);
+  const budgetPackages = packages.filter(p => p.package_type === "budget").slice(0, 5);
+
+  // Determine what to display
+  const displayPackages = viewMode === "all" 
+    ? filtered 
+    : viewMode === "domestic"
+    ? domesticPackages
+    : viewMode === "international"
+    ? internationalPackages
+    : viewMode === "budget"
+    ? budgetPackages
+    : latestPackages;
+
   const capitalize = (str) => {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -108,19 +128,39 @@ export default function Packages() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white">
+        <div 
+          onClick={() => setViewMode("all")}
+          className={`bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
+            viewMode === "all" ? "ring-4 ring-blue-300" : ""
+          }`}
+        >
           <p className="text-white/80 text-sm mb-1">Total Packages</p>
           <p className="text-3xl font-bold">{packages.length}</p>
         </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-xl shadow-lg text-white">
+        <div 
+          onClick={() => setViewMode("domestic")}
+          className={`bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
+            viewMode === "domestic" ? "ring-4 ring-green-300" : ""
+          }`}
+        >
           <p className="text-white/80 text-sm mb-1">🏠 Domestic</p>
           <p className="text-3xl font-bold">{domesticCount}</p>
         </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-5 rounded-xl shadow-lg text-white">
+        <div 
+          onClick={() => setViewMode("international")}
+          className={`bg-gradient-to-br from-purple-500 to-purple-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
+            viewMode === "international" ? "ring-4 ring-purple-300" : ""
+          }`}
+        >
           <p className="text-white/80 text-sm mb-1">✈️ International</p>
           <p className="text-3xl font-bold">{internationalCount}</p>
         </div>
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-5 rounded-xl shadow-lg text-white">
+        <div 
+          onClick={() => setViewMode("budget")}
+          className={`bg-gradient-to-br from-orange-500 to-orange-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
+            viewMode === "budget" ? "ring-4 ring-orange-300" : ""
+          }`}
+        >
           <p className="text-white/80 text-sm mb-1">💰 Budget</p>
           <p className="text-3xl font-bold">{budgetCount}</p>
         </div>
@@ -171,6 +211,22 @@ export default function Packages() {
       {/* Packages Table */}
       {!loading || packages.length > 0 ? (
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="px-6 py-4 bg-gray-50 border-b">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {viewMode === "all" 
+                ? "All Packages" 
+                : viewMode === "domestic"
+                ? "Latest 5 Domestic Packages"
+                : viewMode === "international"
+                ? "Latest 5 International Packages"
+                : viewMode === "budget"
+                ? "Latest 5 Budget Packages"
+                : "Latest 5 Packages"}
+            </h3>
+            <p className="text-sm text-gray-600 mt-0.5">
+              {displayPackages?.length || 0} package{displayPackages?.length !== 1 ? 's' : ''} found
+            </p>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
@@ -184,12 +240,12 @@ export default function Packages() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filtered.map((p) => (
+                {displayPackages.map((p) => (
                   <tr key={p.id} className="hover:bg-blue-50 transition">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <img 
-                          src={p.image || "https://via.placeholder.com/60"} 
+                          src={p.image ? `http://localhost:8000/${p.image}` : "https://via.placeholder.com/60"} 
                           alt={p.title} 
                           className="w-16 h-16 rounded-lg object-cover shadow"
                         />
@@ -288,7 +344,7 @@ export default function Packages() {
           <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="relative">
               <img 
-                src={viewData.image || "https://via.placeholder.com/800x400"} 
+                src={viewData.image ? `http://localhost:8000/${viewData.image}` : "https://via.placeholder.com/800x400"} 
                 alt={viewData.title}
                 className="w-full h-64 object-cover rounded-t-2xl"
               />

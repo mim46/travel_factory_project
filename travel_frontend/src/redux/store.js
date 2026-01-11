@@ -8,6 +8,8 @@ import destinationReducer from './slices/destinationSlice';
 import reportReducer from './slices/reportSlice';
 import messageReducer from './slices/messageSlice';
 import forgotPasswordReducer from './slices/forgotPasswordSlice';
+import countryReducer from './slices/countrySlice';
+import placeReducer from './slices/placeSlice';
 
 
 export const store = configureStore({
@@ -18,10 +20,11 @@ export const store = configureStore({
     query: queryReducer,
     destinations: destinationReducer,
     reports: reportReducer,
-    user: userReducer, // ⭐ Add this
-    messages: messageReducer, // ⭐ Add this
+    user: userReducer,
+    messages: messageReducer,
     forgotPassword: forgotPasswordReducer,
-
+    countries: countryReducer,
+    places: placeReducer,
   },
 });
 

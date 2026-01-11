@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../redux/slices/authSlice";
-import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMoneyBillWave, FaChartLine, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMoneyBillWave, FaChartLine, FaCog, FaSignOutAlt, FaGlobe, FaMapMarkerAlt } from "react-icons/fa";
 import logo from "../../assets/images/logo.png";
 
 export default function Sidebar() {
@@ -85,15 +85,6 @@ export default function Sidebar() {
         ${isActive("/admin/reports") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaChartLine /> Reports
-      </Link>
-
-      {/* Settings */}
-      <Link
-        to="/admin/settings"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
-        ${isActive("/admin/settings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-      >
-        <FaCog /> Settings
       </Link>
 
       {/* Sign Out */}

@@ -90,18 +90,42 @@ export default function Dashboard() {
       </h2>
 
       {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        <div onClick={() => navigate('/admin/users')} className="cursor-pointer">
-          <StatCard title="Total Users" value={users.length} icon={<FaUsers />} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div onClick={() => navigate('/admin/users')}>
+          <StatCard 
+            title="Total Users" 
+            value={users.length} 
+            icon={<FaUsers />} 
+            gradient="bg-gradient-to-br from-blue-50 to-blue-100"
+            borderColor="border-cyan-500"
+          />
         </div>
-        <div onClick={() => navigate('/admin/packages')} className="cursor-pointer">
-          <StatCard title="Packages" value={packages.length} icon={<FaBox />} />
+        <div onClick={() => navigate('/admin/packages')}>
+          <StatCard 
+            title="Packages" 
+            value={packages.length} 
+            icon={<FaBox />} 
+            gradient="bg-purple-50"
+            borderColor="border-purple-500"
+          />
         </div>
-        <div onClick={() => navigate('/admin/bookings')} className="cursor-pointer">
-          <StatCard title="Bookings" value={bookings.length} icon={<FaShoppingCart />} />
+        <div onClick={() => navigate('/admin/bookings')}>
+          <StatCard 
+            title="Bookings" 
+            value={bookings.length} 
+            icon={<FaShoppingCart />} 
+            gradient="bg-green-50"
+            borderColor="border-green-500"
+          />
         </div>
-        <div onClick={() => navigate('/admin/messages')} className="cursor-pointer">
-          <StatCard title="Messages" value={adminMessages.length} icon={<FaEnvelope />} /> {/* ⭐ Changed from queries.length to adminMessages.length */}
+        <div onClick={() => navigate('/admin/messages')}>
+          <StatCard 
+            title="Messages" 
+            value={adminMessages.length} 
+            icon={<FaEnvelope />}
+            gradient="bg-orange-50"
+            borderColor="border-orange-500"
+          />
         </div>
       </div>
 

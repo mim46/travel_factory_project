@@ -86,6 +86,10 @@ export default function Bookings() {
   const pendingCount = bookings.filter(b => b.status === "pending").length;
   const confirmedCount = bookings.filter(b => b.status === "confirmed").length;
   const cancelledCount = bookings.filter(b => b.status === "cancelled").length;
+  const paidCount = bookings.filter(b => b.payment_status === "completed").length;
+  const totalRevenue = bookings
+    .filter(b => b.payment_status === "completed")
+    .reduce((sum, b) => sum + (parseFloat(b.total_price) || 0), 0);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -124,7 +128,7 @@ export default function Bookings() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white">
           <p className="text-white/80 text-sm mb-1">Total Bookings</p>
           <p className="text-3xl font-bold">{bookings.length}</p>
@@ -137,9 +141,13 @@ export default function Bookings() {
           <p className="text-white/80 text-sm mb-1">✅ Confirmed</p>
           <p className="text-3xl font-bold">{confirmedCount}</p>
         </div>
-        <div className="bg-gradient-to-br from-red-500 to-red-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">❌ Cancelled</p>
-          <p className="text-3xl font-bold">{cancelledCount}</p>
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-5 rounded-xl shadow-lg text-white">
+          <p className="text-white/80 text-sm mb-1">💳 Paid</p>
+          <p className="text-3xl font-bold">{paidCount}</p>
+        </div>
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-5 rounded-xl shadow-lg text-white">
+          <p className="text-white/80 text-sm mb-1">💰 Revenue</p>
+          <p className="text-2xl font-bold">৳{totalRevenue.toLocaleString()}</p>
         </div>
       </div>
 
@@ -197,6 +205,8 @@ export default function Bookings() {
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Package</th>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Travel Date</th>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Persons</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Total Price</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Payment Status</th>
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Status</th>
                   <th className="px-6 py-4 text-center text-sm font-bold text-gray-700">Actions</th>
                 </tr>
@@ -230,6 +240,20 @@ export default function Bookings() {
                         <FaUsers className="text-blue-500" />
                         <span className="font-semibold">{booking.persons}</span>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-blue-600">
+                      ৳{booking.total_price ? Number(booking.total_price).toLocaleString() : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                        booking.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {booking.payment_status === 'completed' ? '✅ Paid' : 
+                         booking.payment_status === 'pending' ? '⏳ Pending' : 
+                         '❌ Failed'}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(booking.status)}`}>
@@ -415,6 +439,49 @@ export default function Bookings() {
                     <p className="text-sm text-gray-600">Number of Persons</p>
                     <p className="font-semibold text-gray-800">{viewData.persons} person(s)</p>
                   </div>
+                </div>
+              </div>
+
+              {/* Payment Details */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                  <FaMoneyBillWave className="text-green-500" /> Payment Information
+                </h3>
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <p className="text-sm text-gray-600">Total Amount</p>
+                      <p className="font-bold text-blue-600 text-xl">
+                        ৳{viewData.total_price ? Number(viewData.total_price).toLocaleString() : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Payment Status</p>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 ${
+                        viewData.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                        viewData.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {viewData.payment_status === 'completed' ? '✅ Paid' : 
+                         viewData.payment_status === 'pending' ? '⏳ Pending' : 
+                         '❌ Failed'}
+                      </span>
+                    </div>
+                  </div>
+                  {viewData.payment_method && (
+                    <div>
+                      <p className="text-sm text-gray-600">Payment Method</p>
+                      <p className="font-semibold text-gray-800">{viewData.payment_method.toUpperCase()}</p>
+                    </div>
+                  )}
+                  {viewData.transaction_id && (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-600">Transaction ID</p>
+                      <p className="font-mono text-sm text-gray-800 bg-white px-2 py-1 rounded">
+                        {viewData.transaction_id}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 

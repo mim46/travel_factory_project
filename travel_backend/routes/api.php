@@ -15,6 +15,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\PlaceController;
 
 
 /*
@@ -35,6 +37,10 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'
 // Public packages
 Route::get('/packages', [PackageController::class, 'index']);
 Route::get('/packages/{id}', [PackageController::class, 'show']);
+
+// Public countries and places
+Route::get('/countries', [CountryController::class, 'index']);
+Route::get('/places', [PlaceController::class, 'index']);
 
 // Public destinations
 Route::get('/destinations', [DestinationController::class, 'index']);
@@ -98,6 +104,16 @@ Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
         Route::post('/packages', [PackageController::class, 'store']);
         Route::put('/packages/{id}', [PackageController::class, 'update']);
         Route::delete('/packages/{id}', [PackageController::class, 'destroy']);
+
+        // Countries Management
+        Route::post('/countries', [CountryController::class, 'store']);
+        Route::put('/countries/{id}', [CountryController::class, 'update']);
+        Route::delete('/countries/{id}', [CountryController::class, 'destroy']);
+
+        // Places Management
+        Route::post('/places', [PlaceController::class, 'store']);
+        Route::put('/places/{id}', [PlaceController::class, 'update']);
+        Route::delete('/places/{id}', [PlaceController::class, 'destroy']);
 
         // Bookings Management
         Route::get('/admin/bookings', [BookingController::class, 'index']);

@@ -31,6 +31,14 @@ export default function Payment() {
   }
 
   const totalAmount = packageData.price * bookingData.persons;
+  
+  // Calculate advance amount for group tours
+  const isGroupTour = packageData.tour_type === "group";
+  const advancePercentage = packageData.advance_percentage || 30;
+  const advanceAmount = isGroupTour 
+    ? Math.round(totalAmount * (advancePercentage / 100))
+    : totalAmount;
+  const balanceAmount = totalAmount - advanceAmount;
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -53,6 +61,8 @@ export default function Payment() {
         travel_date: bookingData.travel_date,
         special_request: bookingData.special_request,
         total_amount: totalAmount,
+        advance_amount: advanceAmount,
+        payment_type: isGroupTour ? 'advance' : 'full',
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -102,6 +112,13 @@ export default function Payment() {
                   <span className="text-gray-600">Duration:</span>
                   <span className="font-semibold text-gray-800">{packageData.duration}</span>
                 </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Tour Type:</span>
+                  <span className={`font-semibold ${isGroupTour ? 'text-purple-600' : 'text-green-600'}`}>
+                    {isGroupTour ? '👥 Group Tour' : '🧳 Individual Tour'}
+                  </span>
+                </div>
                 
                 <div className="flex justify-between">
                   <span className="text-gray-600">Persons:</span>
@@ -122,10 +139,29 @@ export default function Payment() {
                   <span className="font-semibold">৳{Number(packageData.price).toLocaleString()}</span>
                 </div>
                 
-                <div className="flex justify-between text-lg font-bold text-blue-600">
+                <div className="flex justify-between text-lg font-bold text-gray-800">
                   <span>Total Amount:</span>
                   <span>৳{totalAmount.toLocaleString()}</span>
                 </div>
+
+                {isGroupTour && (
+                  <>
+                    <hr className="my-3" />
+                    <div className="bg-purple-50 p-3 rounded-lg space-y-2">
+                      <div className="flex justify-between text-purple-700">
+                        <span className="font-semibold">Pay Now ({advancePercentage}%):</span>
+                        <span className="font-bold">৳{advanceAmount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-600 text-xs">
+                        <span>Balance Due:</span>
+                        <span>৳{balanceAmount.toLocaleString()}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 italic">
+                      💡 Pay advance now, balance before tour starts
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -214,7 +250,10 @@ export default function Payment() {
                   ) : (
                     <>
                       <FaCheckCircle />
-                      Pay ৳{totalAmount.toLocaleString()}
+                      {isGroupTour 
+                        ? `Pay Advance ৳${advanceAmount.toLocaleString()}`
+                        : `Pay ৳${totalAmount.toLocaleString()}`
+                      }
                     </>
                   )}
                 </button>

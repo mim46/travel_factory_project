@@ -51,7 +51,10 @@ export const createPackage = createAsyncThunk(
     try {
       const token = localStorage.getItem('token');
       const response = await api.post('/packages', packageData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
       return response.data;
     } catch (error) {
@@ -66,8 +69,11 @@ export const updatePackage = createAsyncThunk(
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await api.put(`/packages/${id}`, data, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await api.post(`/packages/${id}?_method=PUT`, data, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
       return response.data;
     } catch (error) {

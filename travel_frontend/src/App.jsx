@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import MainLayout from "./layout/MainLayout";
 
 // Existing pages
@@ -30,7 +31,10 @@ import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import Users from "./admin/pages/Users";
 import Packages from "./admin/pages/Packages";
+import Countries from "./admin/pages/Countries";
+import Places from "./admin/pages/Places";
 import Bookings from "./admin/pages/Bookings";
+import Payments from "./admin/pages/Payments";
 import AdminMessages from "./admin/pages/Messages";  // ✅ Renamed to AdminMessages
 import AdminDestinations from "./admin/pages/Destinations";
 import Reports from "./admin/pages/Reports";
@@ -47,17 +51,22 @@ import UserMessages from "./user/pages/Messages";  // ✅ Renamed to UserMessage
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <>
+      <Toaster position="top-right" />
+      <BrowserRouter>
+        <Routes>
 
-        {/* =============================
-            ⭐ ADMIN PANEL ROUTES
-        ============================== */}
+          {/* =============================
+              ⭐ ADMIN PANEL ROUTES
+          ============================== */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="packages" element={<Packages />} />
+          <Route path="countries" element={<Countries />} />
+          <Route path="places" element={<Places />} />
           <Route path="bookings" element={<Bookings />} />
+          <Route path="payments" element={<Payments />} />
           <Route path="messages" element={<AdminMessages />} />
           <Route path="destinations" element={<AdminDestinations />} />
           <Route path="reports" element={<Reports />} />
@@ -110,5 +119,6 @@ export default function App() {
 
       </Routes>
     </BrowserRouter>
+    </>
   );
 }

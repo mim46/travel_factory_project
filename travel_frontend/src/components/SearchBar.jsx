@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaUsers, FaSearch } from "react-icons/fa";
 
@@ -7,6 +7,15 @@ export default function SearchBar() {
 
   const [destination, setDestination] = useState("");
   const [tourType, setTourType] = useState("");
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    // Fetch countries from backend
+    fetch('http://localhost:8000/api/countries')
+      .then(res => res.json())
+      .then(data => setCountries(data))
+      .catch(err => console.error('Error fetching countries:', err));
+  }, []);
 
   const handleSearch = () => {
     if (!destination) return alert("Please select a destination");
@@ -55,11 +64,13 @@ export default function SearchBar() {
             >
               <option value="">Select Destination</option>
               <option value="bangladesh">Bangladesh</option>
-              <option value="thailand">Thailand</option>
-              <option value="malaysia">Malaysia</option>
-              <option value="singapore">Singapore</option>
-              <option value="dubai">Dubai</option>
-              <option value="turkey">Turkey</option>
+              {countries
+                .filter(country => country.name.toLowerCase() !== 'bangladesh')
+                .map((country) => (
+                  <option key={country.id} value={country.name.toLowerCase()}>
+                    {country.name}
+                  </option>
+                ))}
             </select>
           </div>
 

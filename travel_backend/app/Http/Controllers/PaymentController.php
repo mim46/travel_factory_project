@@ -22,11 +22,17 @@ class PaymentController extends Controller
             'persons' => 'required|integer|min:1',
             'travel_date' => 'required|date',
             'total_amount' => 'required|numeric',
+            'advance_amount' => 'nullable|numeric',
+            'payment_type' => 'nullable|string|in:advance,full',
         ]);
 
         $user = $request->user();
+        
+        // Determine payment amount (advance or full)
+        $paymentAmount = $request->advance_amount ?? $request->total_amount;
+        $paymentType = $request->payment_type ?? 'full';
 
-        // Create booking first
+        // Create booking first with confirmed status
         $booking = Booking::create([
             'user_id' => $user->id,
             'package_id' => $request->package_id,
@@ -39,7 +45,7 @@ class PaymentController extends Controller
             'total_price' => $request->total_amount,
             'payment_method' => 'sslcommerz',
             'payment_status' => 'pending',
-            'status' => 'pending',
+            'status' => 'confirmed', // Always confirmed for users
         ]);
 
         // SSLCommerz Credentials
@@ -55,7 +61,7 @@ class PaymentController extends Controller
         $postData = [
             'store_id' => $storeId,
             'store_passwd' => $storePassword,
-            'total_amount' => $request->total_amount,
+            'total_amount' => $paymentAmount,
             'currency' => 'BDT',
             'tran_id' => 'TXN_' . $booking->id . '_' . time(),
             'success_url' => config('services.sslcommerz.success_url'),
@@ -72,7 +78,7 @@ class PaymentController extends Controller
             'cus_country' => 'Bangladesh',
             
             // Product Information
-            'product_name' => 'Travel Package Booking',
+            'product_name' => 'Travel Package Booking - ' . ($paymentType === 'advance' ? 'Advance Payment' : 'Full Payment'),
             'product_category' => 'Travel',
             'product_profile' => 'general',
             

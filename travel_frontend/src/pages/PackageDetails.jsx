@@ -52,7 +52,7 @@ export default function PackageDetails() {
         {/* Banner Image */}
         <div className="relative mb-8">
           <img
-            src={pkg.image || "https://via.placeholder.com/1200x400"}
+            src={pkg.image ? `http://localhost:8000/${pkg.image}` : "https://via.placeholder.com/1200x400"}
             alt={pkg.title}
             className="w-full h-64 md:h-96 object-cover rounded-2xl shadow-xl"
           />

@@ -40,9 +40,9 @@ export default function BudgetHome() {
               className="bg-white shadow rounded-xl overflow-hidden hover:shadow-xl transition"
             >
               <img
-                src={pkg.image || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=60"}
+                src={pkg.image ? `http://localhost:8000/${pkg.image}` : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=60"}
                 alt={pkg.title}
-                className="w-full h-60 object-cover"
+                className="w-full h-48 object-cover"
               />
 
               <div className="p-6">

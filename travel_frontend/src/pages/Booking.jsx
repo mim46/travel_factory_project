@@ -61,6 +61,21 @@ export default function Booking() {
       return;
     }
 
+    // Validate group tour specific rules
+    if (pkg.tour_type === "group") {
+      // Check if seats available
+      const availableSeats = pkg.available_seats || 0;
+      if (availableSeats <= 0) {
+        alert("❌ Sorry, this group tour is fully booked!");
+        return;
+      }
+      
+      if (formData.persons > availableSeats) {
+        alert(`❌ Only ${availableSeats} seats available! Please reduce the number of persons.`);
+        return;
+      }
+    }
+
     // Navigate to payment page with booking data
     navigate(`/payment/${id}`, {
       state: {
@@ -77,6 +92,8 @@ export default function Booking() {
           title: pkg.title,
           price: pkg.price,
           duration: pkg.duration,
+          tour_type: pkg.tour_type,
+          advance_percentage: pkg.advance_percentage,
         }
       }
     });
@@ -118,19 +135,74 @@ export default function Booking() {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
           <div className="relative h-64">
             <img
-              src={pkg.image || "https://via.placeholder.com/800x400"}
+              src={pkg.image ? `http://localhost:8000/${pkg.image}` : "https://via.placeholder.com/800x400"}
               alt={pkg.title}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
               <div className="p-6 text-white">
                 <h1 className="text-3xl font-bold mb-2">{pkg.title}</h1>
-                <p className="text-lg">
-                  <span className="font-semibold">৳{Number(pkg.price).toLocaleString()}</span> | {pkg.duration}
-                </p>
+                <div className="flex items-center gap-4 flex-wrap">
+                  <p className="text-lg">
+                    <span className="font-semibold">৳{Number(pkg.price).toLocaleString()}</span> | {pkg.duration}
+                  </p>
+                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                    pkg.tour_type === 'group' 
+                      ? 'bg-purple-500 text-white' 
+                      : 'bg-green-500 text-white'
+                  }`}>
+                    {pkg.tour_type === 'group' ? '👥 Group Tour' : '🧳 Individual Tour'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Group Tour Stats */}
+          {pkg.tour_type === "group" && (
+            <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border-t-4 border-purple-500">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {pkg.total_booked || 0} / {pkg.max_persons}
+                  </p>
+                  <p className="text-sm text-gray-600">Seats Booked</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-green-600">
+                    {pkg.available_seats || 0}
+                  </p>
+                  <p className="text-sm text-gray-600">Seats Available</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {pkg.min_persons}
+                  </p>
+                  <p className="text-sm text-gray-600">Minimum Required</p>
+                </div>
+              </div>
+              
+              {pkg.is_tour_confirmed ? (
+                <div className="mt-4 text-center">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold">
+                    ✅ Tour Confirmed! Minimum requirement met
+                  </span>
+                </div>
+              ) : (
+                <div className="mt-4 text-center">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full font-semibold">
+                    ⏳ {pkg.min_persons - (pkg.total_booked || 0)} more bookings needed to confirm
+                  </span>
+                </div>
+              )}
+
+              <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">💳 Payment:</span> Pay {pkg.advance_percentage}% advance now, rest before tour starts
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Booking Form */}
@@ -201,24 +273,76 @@ export default function Booking() {
                   value={formData.persons}
                   onChange={handleChange}
                   min="1"
+                  max={pkg.tour_type === "group" ? pkg.available_seats : undefined}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
                 />
+                {pkg.tour_type === "group" && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Max {pkg.available_seats} seats available
+                  </p>
+                )}
               </div>
 
               <div>
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                   <FaCalendar className="text-blue-600" /> Travel Date *
                 </label>
-                <input
-                  type="date"
-                  name="travel_date"
-                  value={formData.travel_date}
-                  onChange={handleChange}
-                  min={today}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                />
+                
+                {pkg.tour_type === "group" ? (
+                  // Group Tour: Dropdown with available dates
+                  <select
+                    name="travel_date"
+                    value={formData.travel_date}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                  >
+                    <option value="">Select a date</option>
+                    {(() => {
+                      let dates = pkg.available_dates;
+                      // Parse if string
+                      if (typeof dates === 'string') {
+                        try {
+                          dates = JSON.parse(dates);
+                        } catch (e) {
+                          dates = [];
+                        }
+                      }
+                      
+                      return dates && Array.isArray(dates) && dates.length > 0 ? (
+                        dates.map((date, idx) => (
+                          <option key={idx} value={date}>
+                            {new Date(date).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>No dates available</option>
+                      );
+                    })()}
+                  </select>
+                ) : (
+                  // Individual Tour: Date picker
+                  <input
+                    type="date"
+                    name="travel_date"
+                    value={formData.travel_date}
+                    onChange={handleChange}
+                    min={today}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                  />
+                )}
+                
+                {pkg.tour_type === "group" && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Fixed departure dates only
+                  </p>
+                )}
               </div>
             </div>
 

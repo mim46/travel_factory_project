@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Package;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -20,6 +21,27 @@ class BookingController extends Controller
             'special_request' => 'nullable|string',
         ]);
 
+        $package = Package::findOrFail($request->package_id);
+
+        // Group tour validation
+        if ($package->tour_type === 'group') {
+            // Check available seats
+            $available = $package->available_seats;
+            
+            if ($available !== null && $request->persons > $available) {
+                return response()->json([
+                    'message' => "Only {$available} seats available"
+                ], 422);
+            }
+
+            // Check max capacity
+            if ($package->max_persons && $request->persons > $package->max_persons) {
+                return response()->json([
+                    'message' => "Maximum {$package->max_persons} persons allowed per booking"
+                ], 422);
+            }
+        }
+
         $booking = Booking::create([
             'user_id' => auth()->id(),
             'package_id' => $request->package_id,
@@ -29,7 +51,7 @@ class BookingController extends Controller
             'persons' => $request->persons,
             'travel_date' => $request->travel_date,
             'special_request' => $request->special_request,
-            'status' => 'pending',
+            'status' => 'confirmed',
         ]);
 
         return response()->json([
