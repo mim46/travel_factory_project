@@ -5,6 +5,10 @@ import MainLayout from "./layout/MainLayout";
 import Home from "./pages/Home";
 import BudgetHome from "./pages/BudgetHome";
 import Booking from "./pages/Booking";
+import Payment from "./pages/Payment";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailed from "./pages/PaymentFailed";
+import PaymentCancelled from "./pages/PaymentCancelled";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PackageDetails from "./pages/PackageDetails";
@@ -83,6 +87,10 @@ export default function App() {
           <Route path="budget" element={<BudgetHome />} />
           <Route path="package-details/:id" element={<PackageDetails />} />
           <Route path="booking/:id" element={<Booking />} />
+          <Route path="payment/:id" element={<Payment />} />
+          <Route path="payment/success" element={<PaymentSuccess />} />
+          <Route path="payment/failed" element={<PaymentFailed />} />
+          <Route path="payment/cancelled" element={<PaymentCancelled />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="gallery" element={<Gallery />} />

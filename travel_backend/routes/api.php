@@ -13,6 +13,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\PaymentController;
 
 
 /*
@@ -24,6 +26,11 @@ use App\Http\Controllers\MessageController;
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Forgot Password
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOtp']);
+Route::post('/verify-otp', [ForgotPasswordController::class, 'verifyOtp']);
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
 
 // Public packages
 Route::get('/packages', [PackageController::class, 'index']);
@@ -37,6 +44,11 @@ Route::get('/destinations/featured', [DestinationController::class, 'featured'])
 // Public query/contact submission
 Route::post('/queries', [QueryController::class, 'store']);
 Route::post('/contact', [ContactMessageController::class, 'store']);
+
+// Payment Callbacks (SSLCommerz) - Support both GET and POST
+Route::match(['get', 'post'], '/payment/success', [PaymentController::class, 'success']);
+Route::match(['get', 'post'], '/payment/fail', [PaymentController::class, 'fail']);
+Route::match(['get', 'post'], '/payment/cancel', [PaymentController::class, 'cancel']);
 
 
 /*
@@ -64,6 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Bookings
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::get('/my-bookings', [BookingController::class, 'myBookings']);
+
+    // Payment
+    Route::post('/payment/initiate', [PaymentController::class, 'initiate']);
 
     // User Messages
 Route::get('/my-messages', [MessageController::class, 'myMessages']);

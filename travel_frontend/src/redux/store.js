@@ -7,6 +7,7 @@ import queryReducer from './slices/querySlice';
 import destinationReducer from './slices/destinationSlice';
 import reportReducer from './slices/reportSlice';
 import messageReducer from './slices/messageSlice';
+import forgotPasswordReducer from './slices/forgotPasswordSlice';
 
 
 export const store = configureStore({
@@ -19,6 +20,7 @@ export const store = configureStore({
     reports: reportReducer,
     user: userReducer, // ⭐ Add this
     messages: messageReducer, // ⭐ Add this
+    forgotPassword: forgotPasswordReducer,
 
   },
 });

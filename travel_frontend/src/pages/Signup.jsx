@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../redux/slices/authSlice";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import logo from "../assets/images/logo.png";
 
 export default function Signup() {
@@ -21,12 +22,13 @@ export default function Signup() {
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Optional field validations
     if (name === "phone" && (!/^\d*$/.test(value) || value.length > 11)) return;
 
     setForm({ ...form, [name]: value });
@@ -48,7 +50,6 @@ export default function Signup() {
       newErrors.confirmPassword = "Passwords do not match.";
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
@@ -56,17 +57,19 @@ export default function Signup() {
   const handleSubmit = async () => {
     if (!validate()) return;
 
-    const result = await dispatch(registerUser({
-      name: form.name,
-      email: form.email,
-      password: form.password,
-      phone: form.phone,
-      gender: form.gender,
-      dob: form.dob,
-      address: form.address,
-    }));
+    const result = await dispatch(
+      registerUser({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+        gender: form.gender,
+        dob: form.dob,
+        address: form.address,
+      })
+    );
 
-    if (result.meta.requestStatus === 'fulfilled') {
+    if (result.meta.requestStatus === "fulfilled") {
       alert("Signup successful! Please login now.");
       navigate("/login");
     }
@@ -85,6 +88,7 @@ export default function Signup() {
           Create Your Account
         </h2>
 
+        {/* FORM GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           {/* Full Name */}
@@ -143,6 +147,9 @@ export default function Signup() {
 
           {/* DOB */}
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Date of Birth
+            </label>
             <input
               type="date"
               name="dob"
@@ -167,28 +174,42 @@ export default function Signup() {
           </div>
 
           {/* Password */}
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password (min 8 chars)"
               value={form.password}
               onChange={handleChange}
-              className="p-2.5 rounded-lg w-full border border-blue-400 text-sm"
+              className="p-2.5 pr-10 rounded-lg w-full border border-blue-400 text-sm"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
             {errors.password && <p className="text-red-600 text-xs">{errors.password}</p>}
           </div>
 
           {/* Confirm Password */}
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               placeholder="Confirm Password"
               value={form.confirmPassword}
               onChange={handleChange}
-              className="p-2.5 rounded-lg w-full border border-blue-400 text-sm"
+              className="p-2.5 pr-10 rounded-lg w-full border border-blue-400 text-sm"
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
             {errors.confirmPassword && (
               <p className="text-red-600 text-xs">{errors.confirmPassword}</p>
             )}
@@ -202,12 +223,14 @@ export default function Signup() {
           <span className="text-sm">I agree to the Terms & Conditions.</span>
         </div>
 
-        {/* Error Display */}
+        {/* Error */}
         {error && (
-          <p className="text-red-600 text-sm font-medium text-center mt-3">{error}</p>
+          <p className="text-red-600 text-sm font-medium text-center mt-3">
+            {error}
+          </p>
         )}
 
-        {/* Submit Button */}
+        {/* Submit */}
         <div className="flex justify-center">
           <button
             onClick={handleSubmit}
@@ -218,7 +241,7 @@ export default function Signup() {
           </button>
         </div>
 
-        {/* Login Link */}
+        {/* Login */}
         <p className="text-center mt-3 text-sm">
           Already have an account?
           <a href="/login" className="text-blue-700 font-semibold ml-1">

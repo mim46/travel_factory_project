@@ -73,7 +73,7 @@ export default function Navbar() {
       </div>
 
       {/* NAVBAR CONTENT */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-2 ">
         <div className="grid grid-cols-[auto_1fr_auto] items-center h-20 gap-8">
 
           {/* Logo */}

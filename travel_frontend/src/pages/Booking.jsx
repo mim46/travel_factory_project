@@ -61,33 +61,25 @@ export default function Booking() {
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      const bookingData = {
-        package_id: id,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        persons: formData.persons,
-        travel_date: formData.travel_date,
-        special_request: formData.special_request,
-      };
-
-      await api.post("/bookings", bookingData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    // Navigate to payment page with booking data
+    navigate(`/payment/${id}`, {
+      state: {
+        bookingData: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          persons: formData.persons,
+          travel_date: formData.travel_date,
+          special_request: formData.special_request,
         },
-      });
-
-      alert("✅ Booking successful! We will contact you soon.");
-      navigate("/");
-    } catch (error) {
-      console.error("Booking error:", error);
-      alert("❌ Failed to book package: " + (error.response?.data?.message || error.message || "Unknown error"));
-    } finally {
-      setIsSubmitting(false);
-    }
+        packageData: {
+          id: pkg.id,
+          title: pkg.title,
+          price: pkg.price,
+          duration: pkg.duration,
+        }
+      }
+    });
   };
 
   if (loading) {
