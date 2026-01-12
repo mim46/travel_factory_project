@@ -19,9 +19,13 @@ export default function SearchBar() {
 
   const handleSearch = () => {
     if (!destination) return alert("Please select a destination");
-    if (destination === "bangladesh") return navigate("/domestic");
+    
+    // Build query params for tour type
+    const params = tourType ? `?type=${tourType}` : '';
+    
+    if (destination === "bangladesh") return navigate(`/domestic${params}`);
     if (destination === "budget") return navigate("/budget");
-    navigate(`/international/${destination}`);
+    navigate(`/international/${destination}${params}`);
   };
 
   return (
@@ -98,7 +102,7 @@ export default function SearchBar() {
             >
               <option value="">Select Type</option>
               <option value="group">Group</option>
-              <option value="family">Individual</option>
+              <option value="individual">Individual</option>
             </select>
           </div>
 

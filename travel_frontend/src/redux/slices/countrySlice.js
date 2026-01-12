@@ -46,7 +46,13 @@ export const updateCountry = createAsyncThunk(
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await api.post(`/countries/${id}?_method=PUT`, data, {
+      
+      // Add _method field to FormData for Laravel PUT method spoofing
+      if (data instanceof FormData && !data.has('_method')) {
+        data.append('_method', 'PUT');
+      }
+      
+      const response = await api.post(`/countries/${id}`, data, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

@@ -10,6 +10,8 @@ import messageReducer from './slices/messageSlice';
 import forgotPasswordReducer from './slices/forgotPasswordSlice';
 import countryReducer from './slices/countrySlice';
 import placeReducer from './slices/placeSlice';
+import galleryReducer from './slices/gallerySlice';
+import pageContentReducer from './slices/pageContentSlice';
 
 
 export const store = configureStore({
@@ -25,6 +27,8 @@ export const store = configureStore({
     forgotPassword: forgotPasswordReducer,
     countries: countryReducer,
     places: placeReducer,
+    gallery: galleryReducer,
+    pageContent: pageContentReducer,
   },
 });
 

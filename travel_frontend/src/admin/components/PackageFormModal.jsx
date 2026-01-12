@@ -29,7 +29,10 @@ export default function PackageFormModal({ show, onClose, onSubmit, editData }) 
     advance_percentage: "30",
     available_dates: "",
     country_id: "",
-    place_id: ""
+    place_id: "",
+    is_latest: false,
+    is_recommended: false,
+    is_featured: false
   });
 
   const [imagePreview, setImagePreview] = useState("");
@@ -92,7 +95,10 @@ export default function PackageFormModal({ show, onClose, onSubmit, editData }) 
       advance_percentage: "30",
       available_dates: "",
       country_id: "",
-      place_id: ""
+      place_id: "",
+      is_latest: false,
+      is_recommended: false,
+      is_featured: false
     });
     setImagePreview("");
     setImageFile(null);
@@ -104,8 +110,8 @@ export default function PackageFormModal({ show, onClose, onSubmit, editData }) 
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updates = { [name]: value };
+    const { name, value, type, checked } = e.target;
+    const updates = { [name]: type === 'checkbox' ? checked : value };
     
     // When country_id changes, also update country name
     if (name === 'country_id') {
@@ -221,8 +227,8 @@ export default function PackageFormModal({ show, onClose, onSubmit, editData }) 
         formData.append('country_image', countryImageFile);
       }
       
-      // Handle place image (if new place)
-      if (placeImageFile && form.city && !form.place_id) {
+      // Handle place image (send if uploaded)
+      if (placeImageFile) {
         formData.append('place_image', placeImageFile);
       }
       
@@ -366,6 +372,48 @@ export default function PackageFormModal({ show, onClose, onSubmit, editData }) 
               </div>
               <p className="text-xs text-gray-500 mt-1">
                 💡 Group tours have fixed dates & capacity. Individual tours are flexible.
+              </p>
+            </div>
+
+            {/* Package Tags */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold mb-2 text-gray-700">
+                ⭐ Package Tags
+              </label>
+              <div className="flex gap-6">
+                <label className="flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    name="is_latest" 
+                    checked={form.is_latest || false}
+                    onChange={handleChange}
+                    className="mr-2 w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">🆕 Latest Package</span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    name="is_recommended" 
+                    checked={form.is_recommended || false}
+                    onChange={handleChange}
+                    className="mr-2 w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">⭐ Recommended Package</span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    name="is_featured" 
+                    checked={form.is_featured || false}
+                    onChange={handleChange}
+                    className="mr-2 w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">🌟 Featured Package</span>
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                💡 Tagged packages will appear in homepage sections
               </p>
             </div>
 

@@ -4,6 +4,7 @@ import PackageCard from "../components/PackageCard";
 import WhyUs from "../components/WhyUs";
 import ExclusivePackages from "../components/ExclusivePackages";
 import AboutUs from "../components/AboutUs";
+import GallerySection from "../components/GallerySection";
 
 import domesticImg from "../assets/images/domestic.png";
 import internationalImg from "../assets/images/international.png";
@@ -27,6 +28,8 @@ export default function Home() {
       </div>
 
       <ExclusivePackages />
+
+      <GallerySection />
 
       {/* ⭐ ABOUT US SECTION (scroll target) ⭐ */}
       <div id="about-section" className="mt-24">

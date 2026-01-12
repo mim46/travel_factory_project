@@ -3,6 +3,8 @@ import api from '../../services/api';
 
 const initialState = {
   packages: [],
+  latestPackages: [],
+  recommendedPackages: [],
   currentPackage: null,
   loading: false,
   error: null,
@@ -24,6 +26,38 @@ export const fetchPackages = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch packages');
+    }
+  }
+);
+
+// Get Latest Packages
+export const fetchLatestPackages = createAsyncThunk(
+  'packages/fetchLatest',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await api.get('/packages?filter=latest', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch latest packages');
+    }
+  }
+);
+
+// Get Recommended Packages
+export const fetchRecommendedPackages = createAsyncThunk(
+  'packages/fetchRecommended',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await api.get('/packages?filter=recommended', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch recommended packages');
     }
   }
 );
@@ -121,6 +155,36 @@ const packageSlice = createSlice({
         state.packages = action.payload;
       })
       .addCase(fetchPackages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch Latest Packages
+    builder
+      .addCase(fetchLatestPackages.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchLatestPackages.fulfilled, (state, action) => {
+        state.loading = false;
+        state.latestPackages = action.payload;
+      })
+      .addCase(fetchLatestPackages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch Recommended Packages
+    builder
+      .addCase(fetchRecommendedPackages.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRecommendedPackages.fulfilled, (state, action) => {
+        state.loading = false;
+        state.recommendedPackages = action.payload;
+      })
+      .addCase(fetchRecommendedPackages.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

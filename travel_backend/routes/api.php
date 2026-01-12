@@ -17,6 +17,8 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\PageContentController;
 
 
 /*
@@ -41,6 +43,12 @@ Route::get('/packages/{id}', [PackageController::class, 'show']);
 // Public countries and places
 Route::get('/countries', [CountryController::class, 'index']);
 Route::get('/places', [PlaceController::class, 'index']);
+
+// Public gallery
+Route::get('/galleries', [GalleryController::class, 'index']);
+
+// Public page contents
+Route::get('/page-content/{page}', [PageContentController::class, 'getPage']);
 
 // Public destinations
 Route::get('/destinations', [DestinationController::class, 'index']);
@@ -114,6 +122,14 @@ Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
         Route::post('/places', [PlaceController::class, 'store']);
         Route::put('/places/{id}', [PlaceController::class, 'update']);
         Route::delete('/places/{id}', [PlaceController::class, 'destroy']);
+
+        // Gallery Management
+        Route::post('/galleries', [GalleryController::class, 'store']);
+        Route::put('/galleries/{id}', [GalleryController::class, 'update']);
+        Route::delete('/galleries/{id}', [GalleryController::class, 'destroy']);
+
+        // Page Content Management
+        Route::put('/page-content/{page}', [PageContentController::class, 'updatePage']);
 
         // Bookings Management
         Route::get('/admin/bookings', [BookingController::class, 'index']);

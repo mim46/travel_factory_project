@@ -1,10 +1,12 @@
 import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPackages } from "../redux/slices/packageSlice";
 
 export default function CountryPackages() {
   const { country } = useParams();
+  const [searchParams] = useSearchParams();
+  const tourType = searchParams.get('type'); // Get tour type from query params
   const dispatch = useDispatch();
   const { packages, loading } = useSelector((state) => state.packages);
 
@@ -18,9 +20,14 @@ export default function CountryPackages() {
     return str.toLowerCase().trim();
   };
 
-  // Filter packages by country and package_type=international
+  // Filter packages by country, package_type=international, and tour_type
   const filteredPackages = packages.filter(
-    (p) => normalize(p.country) === normalize(country) && p.package_type === "international"
+    (p) => {
+      const matchesCountry = normalize(p.country) === normalize(country);
+      const isInternational = p.package_type === "international";
+      const matchesTourType = !tourType || normalize(p.tour_type) === normalize(tourType);
+      return matchesCountry && isInternational && matchesTourType;
+    }
   );
 
   if (loading) {
@@ -34,7 +41,7 @@ export default function CountryPackages() {
   return (
     <div className="min-h-screen bg-blue-50 py-10 px-6">
       <h1 className="text-4xl font-bold text-blue-900 mb-8 capitalize text-center">
-        {country} Packages
+        {country} {tourType ? `${tourType.charAt(0).toUpperCase() + tourType.slice(1)} Tour` : ''} Packages
       </h1>
 
       {filteredPackages.length === 0 ? (

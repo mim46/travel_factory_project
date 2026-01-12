@@ -1,80 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
-import maldivesImg from "../assets/images/maldives.jpg";
-import turkeyImg from "../assets/images/turkey.jpg";
-import baliImg from "../assets/images/bali.jpg";
-import nepalImg from "../assets/images/nepal.jpg";
-import saintmartinImg from "../assets/images/saintmartin.jpg";
-import santoriniImg from "../assets/images/santorini.jpg";
-import dubaiImg from "../assets/images/dubai.jpg";
-import thailandImg from "../assets/images/thailand.jpg";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLatestPackages, fetchRecommendedPackages } from "../redux/slices/packageSlice";
 
 export default function ExclusivePackages() {
+  const dispatch = useDispatch();
+  const { latestPackages, recommendedPackages } = useSelector((state) => state.packages);
 
-  // ⭐ LATEST PACKAGES (IDs MUST MATCH international/domestic files)
-  const latestPackages = [
-    { 
-      id: 103, // Maldives package ID
-      title: "Hulhumale-Maafushi", 
-      days: "4 Days 3 Nights", 
-      price: 65000, 
-      img: maldivesImg
-    },
-    { 
-      id: 111, // Turkey Bali Cappadocia ID
-      title: "Istanbul - Cappadocia", 
-      days: "7 Days 6 Nights", 
-      price: 77000,
-      img: turkeyImg   
-    },
-    { 
-      id: 113, // Bali ID
-      title: "Bali Island", 
-      days: "5 Days 4 Nights", 
-      price: 44999, 
-      img: baliImg
-    },
-    { 
-      id: 114, // Pokhara ID
-      title: "Pokhara Adventure", 
-      days: "5 Days 4 Nights", 
-      price: 45000, 
-      img: nepalImg
-    },
-  ];
-
-  // ⭐ RECOMMENDED PACKAGES 
-  const recommendedPackages = [
-    { 
-      id: 9,   // ⭐ REAL SAINT MARTIN ID (NOT 5)
-      title: "Saint Martin", 
-      days: "3 Days 2 Nights", 
-      price: 9999, 
-      img: saintmartinImg
-    },
-    { 
-      id: 117,  // Santorini ID
-      title: "Santorini - Greece", 
-      days: "6 Days 5 Nights", 
-      price: 135000, 
-      img: santoriniImg
-    },
-    { 
-      id: 110, // Dubai Marina ID
-      title: "Dubai Marina", 
-      days: "4 Days 3 Nights", 
-      price: 48999, 
-      img: dubaiImg
-    },
-    { 
-      id: 102, // Pattaya ID
-      title: "Pattaya & Coral Island", 
-      days: "4 Days 3 Nights", 
-      price: 31999, 
-      img: thailandImg
-    },
-  ];
+  useEffect(() => {
+    dispatch(fetchLatestPackages());
+    dispatch(fetchRecommendedPackages());
+  }, [dispatch]);
 
   return (
     <section className="py-20 text-center">
@@ -156,16 +92,20 @@ function SliderBox({ title, data }) {
 
 // ⭐ EXCLUSIVE PACKAGE CARD — CORRECT ROUTING 
 function ExclusiveCard({ data }) {
+  // Default fallback image
+  const defaultImage = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=60";
+  const imageUrl = data.image ? `http://localhost:8000/${data.image}` : defaultImage;
+
   return (
     <Link 
       to={`/package-details/${data.id}`}  // ✔ CORRECT ROUTE
       className="bg-white rounded-2xl shadow-md overflow-hidden border border-blue-300 block"
     >
-      <img src={data.img} alt={data.title} className="w-full h-40 object-cover" />
+      <img src={imageUrl} alt={data.title} className="w-full h-40 object-cover" />
 
       <div className="p-4 text-left space-y-2">
         <h4 className="font-semibold text-lg">{data.title}</h4>
-        <p className="text-gray-600 text-sm">⏱️ {data.days}</p>
+        <p className="text-gray-600 text-sm">⏱️ {data.duration}</p>
         <p className="text-blue-700 font-bold text-right">BDT {data.price}</p>
       </div>
     </Link>

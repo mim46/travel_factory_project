@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPackages } from "../redux/slices/packageSlice";
 import thailand1Img from "../assets/images/thailand1.jpg";
@@ -15,6 +15,8 @@ import greeceImg from "../assets/images/greece.png";
 export default function InternationalHome() {
   const dispatch = useDispatch();
   const { packages } = useSelector((state) => state.packages);
+  const [searchParams] = useSearchParams();
+  const tourType = searchParams.get('type'); // Get tour type from query params
 
   useEffect(() => {
     dispatch(fetchPackages());
@@ -52,14 +54,14 @@ export default function InternationalHome() {
   return (
     <div className="min-h-screen bg-white py-10 px-6">
       <h1 className="text-4xl font-bold text-blue-900 mb-8 text-center">
-        International Destinations
+        International {tourType ? `${tourType.charAt(0).toUpperCase() + tourType.slice(1)} Tour` : ''} Destinations
       </h1>
 
       <div className="grid md:grid-cols-3 gap-10 max-w-5xl mx-auto">
         {countries.map((c) => (
           <Link
             key={c.name}
-            to={`/international/${c.name}`}
+            to={`/international/${c.name}${tourType ? `?type=${tourType}` : ''}`}
             className="bg-blue-50 rounded-xl shadow hover:shadow-xl overflow-hidden transition"
           >
 <img src={c.image} alt="" className="w-full h-52 object-cover" />

@@ -12,9 +12,23 @@ class PackageController extends Controller
     /**
      * 🔹 LIST ALL PACKAGES (User + Admin)
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Package::all(), 200);
+        $query = Package::query();
+
+        // Filter by latest, recommended, or featured
+        if ($request->has('filter')) {
+            $filter = $request->filter;
+            if ($filter === 'latest') {
+                $query->where('is_latest', true);
+            } elseif ($filter === 'recommended') {
+                $query->where('is_recommended', true);
+            } elseif ($filter === 'featured') {
+                $query->where('is_featured', true);
+            }
+        }
+
+        return response()->json($query->get(), 200);
     }
 
 
@@ -38,6 +52,11 @@ class PackageController extends Controller
         ]);
 
         $data = $request->except('image', 'country_image', 'place_image');
+
+        // Handle boolean fields explicitly - convert string 'true'/'false' to boolean
+        $data['is_latest'] = filter_var($request->input('is_latest', false), FILTER_VALIDATE_BOOLEAN);
+        $data['is_recommended'] = filter_var($request->input('is_recommended', false), FILTER_VALIDATE_BOOLEAN);
+        $data['is_featured'] = filter_var($request->input('is_featured', false), FILTER_VALIDATE_BOOLEAN);
 
         // Handle country - create if new with image
         if ($request->country && !$request->country_id) {
@@ -73,6 +92,21 @@ class PackageController extends Controller
             }
             
             $data['place_id'] = $place->id;
+        } elseif ($request->place_id && $request->hasFile('place_image')) {
+            // Update existing place's image
+            $place = Place::find($request->place_id);
+            if ($place) {
+                // Delete old image if exists
+                if ($place->image && file_exists(public_path($place->image))) {
+                    unlink(public_path($place->image));
+                }
+                
+                $placeImage = $request->file('place_image');
+                $placeImageName = time() . '_place_' . uniqid() . '.' . $placeImage->getClientOriginalExtension();
+                $placeImage->move(public_path('uploads/places'), $placeImageName);
+                $place->image = 'uploads/places/' . $placeImageName;
+                $place->save();
+            }
         }
 
         // Handle package image upload
@@ -145,6 +179,11 @@ class PackageController extends Controller
 
         $data = $request->except('image', 'country_image', 'place_image');
 
+        // Handle boolean fields explicitly - convert string 'true'/'false' to boolean
+        $data['is_latest'] = filter_var($request->input('is_latest', false), FILTER_VALIDATE_BOOLEAN);
+        $data['is_recommended'] = filter_var($request->input('is_recommended', false), FILTER_VALIDATE_BOOLEAN);
+        $data['is_featured'] = filter_var($request->input('is_featured', false), FILTER_VALIDATE_BOOLEAN);
+
         // Handle country - create if new with image
         if ($request->country && !$request->country_id) {
             $country = Country::firstOrCreate(
@@ -179,6 +218,21 @@ class PackageController extends Controller
             }
             
             $data['place_id'] = $place->id;
+        } elseif ($request->place_id && $request->hasFile('place_image')) {
+            // Update existing place's image
+            $place = Place::find($request->place_id);
+            if ($place) {
+                // Delete old image if exists
+                if ($place->image && file_exists(public_path($place->image))) {
+                    unlink(public_path($place->image));
+                }
+                
+                $placeImage = $request->file('place_image');
+                $placeImageName = time() . '_place_' . uniqid() . '.' . $placeImage->getClientOriginalExtension();
+                $placeImage->move(public_path('uploads/places'), $placeImageName);
+                $place->image = 'uploads/places/' . $placeImageName;
+                $place->save();
+            }
         }
 
         // Handle package image upload

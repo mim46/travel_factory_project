@@ -35,9 +35,13 @@ import Countries from "./admin/pages/Countries";
 import Places from "./admin/pages/Places";
 import Bookings from "./admin/pages/Bookings";
 import Payments from "./admin/pages/Payments";
-import AdminMessages from "./admin/pages/Messages";  // ✅ Renamed to AdminMessages
+import AdminMessages from "./admin/pages/Messages";
 import AdminDestinations from "./admin/pages/Destinations";
 import Reports from "./admin/pages/Reports";
+import AdminGallery from "./admin/pages/Gallery";
+import PageHome from "./admin/pages/PageHome";
+import PageAbout from "./admin/pages/PageAbout";
+import PageContact from "./admin/pages/PageContact";
 
 // ⭐ USER DASHBOARD IMPORTS
 import UserLayout from "./user/UserLayout";
@@ -62,14 +66,18 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="users" element={<Users />} />
+          <Route path="destinations" element={<AdminDestinations />} />
           <Route path="packages" element={<Packages />} />
+          <Route path="bookings" element={<Bookings />} />
+          <Route path="gallery" element={<AdminGallery />} />
+          <Route path="pages/home" element={<PageHome />} />
+          <Route path="pages/about" element={<PageAbout />} />
+          <Route path="pages/contact" element={<PageContact />} />
+          <Route path="messages" element={<AdminMessages />} />
+          <Route path="payments" element={<Payments />} />
+          <Route path="reports" element={<Reports />} />
           <Route path="countries" element={<Countries />} />
           <Route path="places" element={<Places />} />
-          <Route path="bookings" element={<Bookings />} />
-          <Route path="payments" element={<Payments />} />
-          <Route path="messages" element={<AdminMessages />} />
-          <Route path="destinations" element={<AdminDestinations />} />
-          <Route path="reports" element={<Reports />} />
         </Route>
 
         {/* =============================

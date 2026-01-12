@@ -1,10 +1,12 @@
 import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPackages } from "../redux/slices/packageSlice";
 
 export default function CountryPlace() {
   const { place } = useParams();
+  const [searchParams] = useSearchParams();
+  const tourType = searchParams.get('type'); // Get tour type from query params
   const dispatch = useDispatch();
   const { packages, loading } = useSelector((state) => state.packages);
 
@@ -34,17 +36,18 @@ export default function CountryPlace() {
     return variations.some(variation => normalize(variation) === normalizedCity);
   };
 
-  // Filter packages by city (place) and package_type=domestic
+  // Filter packages by city (place), package_type=domestic, and tour_type
   const filteredPackages = packages.filter((p) => {
     const isDomestic = p.package_type === "domestic";
     const matchesPlace = cityMatchesPlace(p.city);
+    const matchesTourType = !tourType || normalize(p.tour_type) === normalize(tourType);
     
     // Debug logging
     if (isDomestic) {
-      console.log('Package:', p.title, 'City:', p.city, 'Matches:', matchesPlace, 'URL Place:', place);
+      console.log('Package:', p.title, 'City:', p.city, 'Matches:', matchesPlace, 'URL Place:', place, 'Tour Type:', p.tour_type, 'Filter:', tourType);
     }
     
-    return isDomestic && matchesPlace;
+    return isDomestic && matchesPlace && matchesTourType;
   });
 
   if (loading) {
@@ -58,7 +61,7 @@ export default function CountryPlace() {
   return (
     <div className="min-h-screen bg-blue-50 py-10 px-6">
       <h1 className="text-4xl font-bold capitalize text-blue-900 mb-8 text-center">
-        {place.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, str => str.toUpperCase())} Packages
+        {place.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, str => str.toUpperCase())} {tourType ? `${tourType.charAt(0).toUpperCase() + tourType.slice(1)} Tour` : ''} Packages
       </h1>
 
       {filteredPackages.length === 0 ? (

@@ -1,240 +1,185 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchDestinations,
-  createDestination,
-  updateDestination,
-  deleteDestination,
-} from "../../redux/slices/destinationSlice";
+import { FaEdit, FaTrash, FaPlus, FaImage } from "react-icons/fa";
+import { fetchCountries, createCountry, updateCountry, deleteCountry } from "../../redux/slices/countrySlice";
+
+const BASE_URL = "http://127.0.0.1:8000";
 
 export default function Destinations() {
   const dispatch = useDispatch();
-  const { destinations, loading } = useSelector((state) => state.destinations);
+  const { countries, loading } = useSelector((state) => state.countries);
 
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [form, setForm] = useState({
     name: "",
-    country: "",
-    type: "domestic",
-    description: "",
-    image: "",
-    is_popular: false,
-    is_featured: false,
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
-    dispatch(fetchDestinations());
+    dispatch(fetchCountries());
   }, [dispatch]);
+
+  const handleAddNew = () => {
+    setEditData(null);
+    setForm({ name: "" });
+    setImageFile(null);
+    setImagePreview("");
+    setShowModal(true);
+  };
+
+  const handleEdit = (country) => {
+    setEditData(country);
+    setForm({ 
+      name: country.name
+    });
+    setImagePreview(country.image ? `${BASE_URL}/${country.image}` : "");
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this country? This will also affect related packages.")) return;
+    dispatch(deleteCountry(id));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (editData) {
-      await dispatch(updateDestination({ id: editData.id, data: form }));
-    } else {
-      await dispatch(createDestination(form));
+    const formData = new FormData();
+    formData.append("name", form.name);
+    
+    if (imageFile) {
+      formData.append("image", imageFile);
     }
 
-    resetForm();
+    if (editData) {
+      await dispatch(updateCountry({ id: editData.id, data: formData }));
+    } else {
+      await dispatch(createCountry(formData));
+    }
+
     setShowModal(false);
+    dispatch(fetchCountries());
   };
-
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this destination?")) return;
-    await dispatch(deleteDestination(id));
-  };
-
-  const handleEdit = (destination) => {
-    setEditData(destination);
-    setForm({
-      name: destination.name,
-      country: destination.country,
-      type: destination.type,
-      description: destination.description || "",
-      image: destination.image || "",
-      is_popular: destination.is_popular,
-      is_featured: destination.is_featured,
-    });
-    setShowModal(true);
-  };
-
-  const resetForm = () => {
-    setEditData(null);
-    setForm({
-      name: "",
-      country: "",
-      type: "domestic",
-      description: "",
-      image: "",
-      is_popular: false,
-      is_featured: false,
-    });
-  };
-
-  if (loading) return <div className="p-6">Loading...</div>;
 
   return (
-    <div className="p-6">
+    <div className="p-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-[#1C7DA2]">Manage Destinations</h2>
-
+        <h1 className="text-3xl font-bold text-gray-800">Manage Destinations (Countries)</h1>
         <button
-          onClick={() => {
-            resetForm();
-            setShowModal(true);
-          }}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+          onClick={handleAddNew}
+          className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
         >
-          + Add Destination
+          <FaPlus /> Add Country
         </button>
       </div>
 
-      {/* Destinations Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-blue-100">
-            <tr>
-              <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Country</th>
-              <th className="p-3 text-left">Type</th>
-              <th className="p-3 text-center">Popular</th>
-              <th className="p-3 text-center">Featured</th>
-              <th className="p-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {destinations.map((dest) => (
-              <tr key={dest.id} className="border-b hover:bg-blue-50">
-                <td className="p-3">{dest.name}</td>
-                <td className="p-3">{dest.country}</td>
-                <td className="p-3">
-                  <span
-                    className={`px-2 py-1 rounded text-xs ${
-                      dest.type === "domestic"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-blue-100 text-blue-700"
-                    }`}
-                  >
-                    {dest.type}
-                  </span>
-                </td>
-                <td className="p-3 text-center">
-                  {dest.is_popular ? "✅" : "❌"}
-                </td>
-                <td className="p-3 text-center">
-                  {dest.is_featured ? "✅" : "❌"}
-                </td>
-                <td className="p-3 text-center">
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      ) : countries.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-xl shadow-md">
+          <p className="text-gray-500 text-lg">No countries found. Add your first destination!</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {countries.map((country) => (
+            <div key={country.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition">
+              {country.image ? (
+                <img 
+                  src={`${BASE_URL}/${country.image}`} 
+                  alt={country.name} 
+                  className="w-full h-48 object-cover" 
+                />
+              ) : (
+                <div className="w-full h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                  <FaImage className="text-white text-6xl opacity-50" />
+                </div>
+              )}
+              <div className="p-4">
+                <h3 className="font-semibold text-xl mb-2">{country.name}</h3>
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                  <span>{country.packages_count || 0} Packages</span>
+                </div>
+                <div className="flex gap-2">
                   <button
-                    onClick={() => handleEdit(dest)}
-                    className="text-blue-600 hover:underline mr-3"
+                    onClick={() => handleEdit(country)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition"
                   >
-                    Edit
+                    <FaEdit /> Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(dest.id)}
-                    className="text-red-600 hover:underline"
+                    onClick={() => handleDelete(country.id)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
                   >
-                    Delete
+                    <FaTrash /> Delete
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {destinations.length === 0 && (
-          <div className="p-8 text-center text-gray-500">
-            No destinations found. Add your first destination!
-          </div>
-        )}
-      </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">
-              {editData ? "Edit Destination" : "Add New Destination"}
-            </h3>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Destination Name (e.g., Cox's Bazar)"
-                className="w-full p-2 border rounded"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                required
-              />
-
-              <input
-                type="text"
-                placeholder="Country"
-                className="w-full p-2 border rounded"
-                value={form.country}
-                onChange={(e) => setForm({ ...form, country: e.target.value })}
-                required
-              />
-
-              <select
-                className="w-full p-2 border rounded"
-                value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value })}
-              >
-                <option value="domestic">Domestic</option>
-                <option value="international">International</option>
-              </select>
-
-              <textarea
-                placeholder="Description"
-                className="w-full p-2 border rounded"
-                rows="3"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              />
-
-              <input
-                type="text"
-                placeholder="Image URL"
-                className="w-full p-2 border rounded"
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-              />
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={form.is_popular}
-                  onChange={(e) => setForm({ ...form, is_popular: e.target.checked })}
-                />
-                Mark as Popular
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={form.is_featured}
-                  onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
-                />
-                Mark as Featured
-              </label>
-
-              <div className="flex gap-3">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">{editData ? "Edit Country" : "Add New Country"}</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Country Name *</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full p-3 border rounded-lg"
+                    placeholder="e.g., Bangladesh, Thailand, Malaysia"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">
+                    Country Image {editData && "(Leave empty to keep current image)"}
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full p-3 border rounded-lg"
+                    required={!editData}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This image will be displayed on the Destinations page and search dropdown
+                  </p>
+                  {imagePreview && (
+                    <img src={imagePreview} alt="Preview" className="mt-4 w-full h-48 object-cover rounded-lg" />
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-4 mt-6">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                  disabled={loading}
+                  className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
                 >
-                  {editData ? "Update" : "Create"}
+                  {loading ? "Processing..." : editData ? "Update Country" : "Add Country"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    resetForm();
-                  }}
-                  className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition"
                 >
                   Cancel
                 </button>
