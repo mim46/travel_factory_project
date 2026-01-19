@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { 
   fetchAllMessages, 
   fetchAllQueries, 
-  replyToMessage, 
+  replyToMessage,
+  replyToQuery,
   deleteMessage,
   deleteQuery 
 } from "../../redux/slices/messageSlice";
@@ -56,12 +57,8 @@ export default function Messages() {
     setViewModalOpen(true);
   };
 
-  // Open Reply Modal (only for messages)
+  // Open Reply Modal
   const handleReply = (item) => {
-    if (item.type !== 'message') {
-      alert("⚠️ Cannot reply to queries directly. Please contact via email.");
-      return;
-    }
     setSelectedItem(item);
     setReplyText(item.admin_reply || "");
     setReplyModalOpen(true);
@@ -74,7 +71,12 @@ export default function Messages() {
       return;
     }
 
-    dispatch(replyToMessage({ id: selectedItem.id, admin_reply: replyText }));
+    if (selectedItem.type === 'message') {
+      dispatch(replyToMessage({ id: selectedItem.id, admin_reply: replyText }));
+    } else {
+      dispatch(replyToQuery({ id: selectedItem.id, admin_reply: replyText }));
+    }
+    
     alert("✅ Reply sent successfully!");
     setReplyModalOpen(false);
     setReplyText("");
@@ -269,13 +271,8 @@ export default function Messages() {
                       </button>
                       <button
                         onClick={() => handleReply(item)}
-                        className={`${
-                          item.type === 'message' 
-                            ? 'bg-green-500 hover:bg-green-600' 
-                            : 'bg-gray-400 cursor-not-allowed'
-                        } text-white p-2 rounded-lg transition`}
-                        title={item.type === 'message' ? "Reply" : "Cannot reply to queries"}
-                        disabled={item.type === 'query'}
+                        className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition"
+                        title="Reply"
                       >
                         <FaReply />
                       </button>

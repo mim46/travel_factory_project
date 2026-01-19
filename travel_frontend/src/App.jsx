@@ -38,10 +38,12 @@ import Payments from "./admin/pages/Payments";
 import AdminMessages from "./admin/pages/Messages";
 import AdminDestinations from "./admin/pages/Destinations";
 import Reports from "./admin/pages/Reports";
+import SalesReport from "./admin/pages/SalesReport";
 import AdminGallery from "./admin/pages/Gallery";
 import PageHome from "./admin/pages/PageHome";
 import PageAbout from "./admin/pages/PageAbout";
 import PageContact from "./admin/pages/PageContact";
+import AdminReviews from "./admin/pages/Reviews";
 
 // ⭐ USER DASHBOARD IMPORTS
 import UserLayout from "./user/UserLayout";
@@ -73,9 +75,11 @@ export default function App() {
           <Route path="pages/home" element={<PageHome />} />
           <Route path="pages/about" element={<PageAbout />} />
           <Route path="pages/contact" element={<PageContact />} />
+          <Route path="reviews" element={<AdminReviews />} />
           <Route path="messages" element={<AdminMessages />} />
           <Route path="payments" element={<Payments />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="sales-report" element={<SalesReport />} />
           <Route path="countries" element={<Countries />} />
           <Route path="places" element={<Places />} />
         </Route>

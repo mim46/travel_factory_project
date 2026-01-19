@@ -10,15 +10,17 @@ import StatCard from "./components/StatCard";
 import { FaUsers, FaBox, FaShoppingCart, FaEnvelope } from "react-icons/fa";
 
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
+  YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  Legend
 } from "recharts";
 
 export default function Dashboard() {
@@ -38,38 +40,64 @@ export default function Dashboard() {
     return "Good Evening! 🌙";
   };
 
-  // Monthly bookings data (group by month)
-  const getMonthlyBookings = () => {
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const monthlyCounts = {};
+  // Weekly bookings data - From Jan 4 to Jan 25, 2026
+  const getWeeklyBookings = () => {
+    const weekCounts = {};
     
     bookings.forEach((booking) => {
-      const month = new Date(booking.created_at).getMonth();
-      const monthName = monthNames[month];
-      monthlyCounts[monthName] = (monthlyCounts[monthName] || 0) + 1;
+      const date = new Date(booking.created_at);
+      const bookingDate = date.toISOString().split('T')[0];
+      
+      // Check if booking is between Jan 4 and Jan 25, 2026
+      if (bookingDate >= '2026-01-04' && bookingDate <= '2026-01-25') {
+        const weekStart = new Date(date);
+        weekStart.setDate(date.getDate() - date.getDay()); // Get Sunday of that week
+        const weekKey = weekStart.toISOString().split('T')[0];
+        weekCounts[weekKey] = (weekCounts[weekKey] || 0) + 1;
+      }
     });
 
-    return monthNames.map((month) => ({
-      month,
-      bookings: monthlyCounts[month] || 0,
-    }));
+    // Define weeks from Jan 4 to Jan 25
+    const weeks = [
+      { start: new Date('2026-01-04'), label: '4/1' },   // Week 1: Jan 4-10
+      { start: new Date('2026-01-11'), label: '11/1' },  // Week 2: Jan 11-17
+      { start: new Date('2026-01-18'), label: '18/1' },  // Week 3: Jan 18-24
+      { start: new Date('2026-01-25'), label: '25/1' },  // Week 4: Jan 25
+    ];
+
+    return weeks.map(({ start, label }) => {
+      const weekKey = start.toISOString().split('T')[0];
+      return {
+        week: label,
+        bookings: weekCounts[weekKey] || 0,
+      };
+    });
   };
 
-  // Package distribution data
-  const getPackageDistribution = () => {
-    const categoryCount = {};
-    packages.forEach((pkg) => {
-      const category = pkg.category || "Other";
-      categoryCount[category] = (categoryCount[category] || 0) + 1;
+  // Top Selling Packages - by booking count
+  const getTopSellingPackages = () => {
+    const packageCounts = {};
+    
+    bookings.forEach((booking) => {
+      const pkgTitle = booking.package?.title || 'Unknown';
+      const pkgId = booking.package_id;
+      
+      if (!packageCounts[pkgId]) {
+        packageCounts[pkgId] = {
+          name: pkgTitle,
+          value: 0
+        };
+      }
+      packageCounts[pkgId].value += 1;
     });
 
-    return Object.entries(categoryCount).map(([category, count]) => ({
-      category,
-      count,
-    }));
+    // Get top 5 packages
+    return Object.values(packageCounts)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
   };
 
-  const pieColors = ["#4DBEE3", "#FFCE56", "#4BC0C0", "#FF6384", "#36A2EB"];
+  const pieColors = ["#4F46E5", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
 
   // =====================
   // LOAD DATA FROM BACKEND
@@ -132,47 +160,65 @@ export default function Dashboard() {
       {/* CHARTS GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-        {/* Line Chart — Monthly Bookings */}
-        <div className="bg-white p-6 rounded-xl shadow border border-blue-100">
-          <h3 className="text-xl mb-4 font-semibold text-[#1C7DA2]">
-            Monthly Bookings 📈
+        {/* Bar Chart — Weekly Bookings (Jan 4-25, 2026) */}
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-blue-100">
+          <h3 className="text-xl mb-4 font-semibold text-gray-800">
+            📊 Weekly Bookings (Jan 4-25, 2026)
           </h3>
 
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={getMonthlyBookings()}>
-              <CartesianGrid stroke="#e0f3ff" />
-              <XAxis dataKey="month" />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="bookings"
-                stroke="#4DBEE3"
-                strokeWidth={3}
+            <BarChart data={getWeeklyBookings()}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="week" />
+              <YAxis />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#fff', 
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px'
+                }}
               />
-            </LineChart>
+              <Bar 
+                dataKey="bookings" 
+                fill="#4F46E5" 
+                radius={[8, 8, 0, 0]}
+              />
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Pie Chart — Package Category Overview */}
-        <div className="bg-white p-6 rounded-xl shadow border border-blue-100">
-          <h3 className="text-xl mb-4 font-semibold text-[#1C7DA2]">
-            Packages by Category 🎒
+        {/* Pie Chart — Top Selling Packages */}
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-blue-100">
+          <h3 className="text-xl mb-4 font-semibold text-gray-800">
+            🎯 Top 5 Selling Packages
           </h3>
 
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#fff', 
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px'
+                }}
+              />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36}
+                wrapperStyle={{ fontSize: '12px' }}
+              />
               <Pie
-                data={getPackageDistribution()}
-                dataKey="count"
-                nameKey="category"
+                data={getTopSellingPackages()}
+                dataKey="value"
+                nameKey="name"
                 cx="50%"
-                cy="50%"
-                outerRadius={110}
-                label
+                cy="45%"
+                outerRadius={80}
+                label={({ value }) => value}
+                labelLine={false}
               >
-                {getPackageDistribution().map((entry, index) => (
-                  <Cell key={index} fill={pieColors[index % pieColors.length]} />
+                {getTopSellingPackages().map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
                 ))}
               </Pie>
             </PieChart>

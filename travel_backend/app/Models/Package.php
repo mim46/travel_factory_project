@@ -49,6 +49,11 @@ class Package extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
     public function country()
     {
         return $this->belongsTo(Country::class);

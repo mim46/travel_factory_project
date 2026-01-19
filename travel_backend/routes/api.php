@@ -19,6 +19,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\PageContentController;
+use App\Http\Controllers\ReviewController;
 
 
 /*
@@ -49,6 +50,10 @@ Route::get('/galleries', [GalleryController::class, 'index']);
 
 // Public page contents
 Route::get('/page-content/{page}', [PageContentController::class, 'getPage']);
+
+// Public reviews
+Route::get('/packages/{packageId}/reviews', [ReviewController::class, 'getPackageReviews']);
+Route::get('/reviews/featured', [ReviewController::class, 'getFeaturedReviews']);
 
 // Public destinations
 Route::get('/destinations', [DestinationController::class, 'index']);
@@ -99,6 +104,13 @@ Route::get('/my-messages', [MessageController::class, 'myMessages']);
 Route::post('/messages', [MessageController::class, 'store']);
 Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
 
+    // User Reviews
+    Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::get('/my-reviews', [ReviewController::class, 'myReviews']);
+    Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -135,6 +147,7 @@ Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
         Route::get('/admin/bookings', [BookingController::class, 'index']);
         Route::get('/admin/bookings/{id}', [BookingController::class, 'show']);
         Route::patch('/admin/bookings/{id}/status', [BookingController::class, 'updateStatus']);
+        Route::patch('/admin/bookings/{id}/mark-paid', [BookingController::class, 'markAsPaid']);
         Route::delete('/admin/bookings/{id}', [BookingController::class, 'destroy']);
 
         // Users Management
@@ -147,6 +160,7 @@ Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
         // Queries Management
         Route::get('/admin/queries', [QueryController::class, 'index']);
         Route::patch('/admin/queries/{id}/read', [QueryController::class, 'markAsRead']);
+        Route::patch('/admin/queries/{id}/reply', [QueryController::class, 'reply']);
         Route::delete('/admin/queries/{id}', [QueryController::class, 'destroy']);
         
 
@@ -172,6 +186,12 @@ Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
         Route::get('/admin/reports/top-packages', [ReportController::class, 'topPackages']);
         Route::get('/admin/reports/package-distribution', [ReportController::class, 'packageTypeDistribution']);
         Route::get('/admin/reports/revenue', [ReportController::class, 'revenue']);
+
+        // Reviews Management
+        Route::get('/admin/reviews', [ReviewController::class, 'adminIndex']);
+        Route::get('/admin/reviews/pending', [ReviewController::class, 'pendingReviews']);
+        Route::patch('/admin/reviews/{id}/approve', [ReviewController::class, 'approve']);
+        Route::delete('/admin/reviews/{id}', [ReviewController::class, 'adminDestroy']);
     });
 });
 

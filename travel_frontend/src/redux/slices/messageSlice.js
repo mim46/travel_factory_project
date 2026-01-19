@@ -138,6 +138,23 @@ export const deleteQuery = createAsyncThunk(
   }
 );
 
+// Admin: Reply to query ✅
+export const replyToQuery = createAsyncThunk(
+  'messages/replyQuery',
+  async ({ id, admin_reply }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await api.patch(`/admin/queries/${id}/reply`, 
+        { admin_reply },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to reply to query');
+    }
+  }
+);
+
 const messageSlice = createSlice({
   name: 'messages',
   initialState,
@@ -208,6 +225,14 @@ const messageSlice = createSlice({
     // Delete query ✅
     builder.addCase(deleteQuery.fulfilled, (state, action) => {
       state.queries = state.queries.filter(q => q.id !== action.payload);
+    });
+
+    // Reply to query ✅
+    builder.addCase(replyToQuery.fulfilled, (state, action) => {
+      const index = state.queries.findIndex(q => q.id === action.payload.query.id);
+      if (index !== -1) {
+        state.queries[index] = action.payload.query;
+      }
     });
   },
 });

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPackageById } from "../redux/slices/packageSlice";
 import api from "../services/api";
-import { FaUser, FaPhone, FaEnvelope, FaUsers, FaCalendar, FaCommentDots, FaSpinner } from "react-icons/fa";
+import { FaUser, FaPhone, FaEnvelope, FaUsers, FaCalendar, FaCommentDots, FaSpinner, FaPassport, FaIdCard } from "react-icons/fa";
 
 export default function Booking() {
   const { id } = useParams();
@@ -20,6 +20,9 @@ export default function Booking() {
     persons: 1,
     travel_date: "",
     special_request: "",
+    passport_number: "",
+    passport_expiry: "",
+    visa_status: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -126,7 +129,10 @@ export default function Booking() {
     );
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  // Minimum date: 5 days from today
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 5);
+  const minDateString = minDate.toISOString().split("T")[0];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 px-4">
@@ -326,17 +332,22 @@ export default function Booking() {
                     })()}
                   </select>
                 ) : (
-                  // Individual Tour: Date picker
+                  // Individual Tour: Date picker (minimum 5 days from today)
                   <input
                     type="date"
                     name="travel_date"
                     value={formData.travel_date}
                     onChange={handleChange}
-                    min={today}
+                    min={minDateString}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
                   />
                 )}
+                <p className="text-xs text-gray-500 mt-1">
+                  {pkg.tour_type === "group" 
+                    ? "Select from available group tour dates" 
+                    : "Booking must be at least 5 days in advance"}
+                </p>
                 
                 {pkg.tour_type === "group" && (
                   <p className="text-xs text-gray-500 mt-1">
@@ -345,6 +356,72 @@ export default function Booking() {
                 )}
               </div>
             </div>
+
+            {/* International Package: Passport & Visa Info */}
+            {pkg.package_type === 'international' && (
+              <div className="col-span-2 space-y-6 border-t pt-6">
+                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <FaPassport className="text-blue-600" /> Passport & Visa Information
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Passport Number */}
+                  <div>
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                      <FaIdCard className="text-blue-600" /> Passport Number *
+                    </label>
+                    <input
+                      type="text"
+                      name="passport_number"
+                      value={formData.passport_number}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                      placeholder="e.g., A12345678"
+                    />
+                  </div>
+
+                  {/* Passport Expiry */}
+                  <div>
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                      <FaCalendar className="text-blue-600" /> Passport Expiry Date *
+                    </label>
+                    <input
+                      type="date"
+                      name="passport_expiry"
+                      value={formData.passport_expiry}
+                      onChange={handleChange}
+                      required
+                      min={minDateString}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Passport must be valid for at least 6 months
+                    </p>
+                  </div>
+
+                  {/* Visa Status */}
+                  <div className="md:col-span-2">
+                    <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                      <FaPassport className="text-blue-600" /> Visa Status *
+                    </label>
+                    <select
+                      name="visa_status"
+                      value={formData.visa_status}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    >
+                      <option value="">Select visa status</option>
+                      <option value="have_visa">I have a valid visa</option>
+                      <option value="need_visa">I need visa assistance</option>
+                      <option value="visa_on_arrival">Visa on arrival</option>
+                      <option value="no_visa_required">No visa required</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Special Request */}
             <div>

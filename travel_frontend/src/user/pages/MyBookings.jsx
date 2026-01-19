@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMyBookings } from "../../redux/slices/bookingSlice";
+import { fetchMyReviews } from "../../redux/slices/reviewSlice";
+import ReviewModal from "../../components/ReviewModal";
 import { 
   FaCalendar, 
   FaUser, 
@@ -12,25 +14,61 @@ import {
   FaEye,
   FaMapMarkerAlt,
   FaMoneyBillWave,
-  FaTimes
+  FaTimes,
+  FaStar
 } from "react-icons/fa";
 
 export default function MyBookings() {
   const dispatch = useDispatch();
   const { myBookings, loading } = useSelector((state) => state.bookings);
+  const { myReviews } = useSelector((state) => state.reviews);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewData, setViewData] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   useEffect(() => {
     dispatch(fetchMyBookings());
+    dispatch(fetchMyReviews());
   }, [dispatch]);
 
   const handleView = (booking) => {
     setViewData(booking);
     setShowViewModal(true);
+  };
+
+  const handleGiveReview = (booking) => {
+    setSelectedBooking(booking);
+    setShowReviewModal(true);
+  };
+
+  const canReview = (booking) => {
+    // Can review if: payment is paid/completed, tour has ended, and not already reviewed
+    if (booking.payment_status !== 'paid' && booking.payment_status !== 'completed') return false;
+    
+    const travelDate = new Date(booking.travel_date);
+    const today = new Date();
+    
+    // Extract duration days (e.g., "3 DAY" -> 3)
+    const durationMatch = booking.package?.duration?.match(/(\d+)/);
+    const durationDays = durationMatch ? parseInt(durationMatch[1]) : 0;
+    
+    // Calculate tour end date
+    const tourEndDate = new Date(travelDate);
+    tourEndDate.setDate(tourEndDate.getDate() + durationDays);
+    
+    // Tour must be completed
+    if (tourEndDate > today) return false;
+
+    const hasReviewed = myReviews.some(review => review.booking_id === booking.id);
+    return !hasReviewed;
+  };
+
+  const hasReview = (booking) => {
+    return myReviews.some(review => review.booking_id === booking.id);
   };
 
   const filtered = myBookings.filter((b) => {
@@ -169,16 +207,39 @@ export default function MyBookings() {
                   </div>
                   <div className="flex items-center gap-2">
                     <FaMoneyBillWave className="text-blue-600" />
-                    <span><strong>Total:</strong> ৳{booking.package?.price ? (Number(booking.package.price) * booking.persons).toLocaleString() : 'N/A'}</span>
+                    <span><strong>Total:</strong> ৳{booking.total_price ? Number(booking.total_price).toLocaleString() : 'N/A'}</span>
                   </div>
+                  {booking.payment_status === 'partially_paid' && (
+                    <div className="flex items-center gap-2">
+                      <FaMoneyBillWave className="text-orange-600" />
+                      <span><strong>Due:</strong> <span className="text-orange-600 font-bold">৳{((booking.total_price || 0) - (booking.paid_amount || 0)).toLocaleString()}</span></span>
+                    </div>
+                  )}
                 </div>
 
-                <button
-                  onClick={() => handleView(booking)}
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
-                >
-                  <FaEye /> View Details
-                </button>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => handleView(booking)}
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                  >
+                    <FaEye /> View Details
+                  </button>
+                  
+                  {canReview(booking) && (
+                    <button
+                      onClick={() => handleGiveReview(booking)}
+                      className="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition flex items-center justify-center gap-2"
+                    >
+                      <FaStar /> Give Review
+                    </button>
+                  )}
+                  
+                  {hasReview(booking) && (
+                    <div className="flex items-center justify-center gap-2 text-green-600 text-sm font-semibold">
+                      <FaStar /> Already Reviewed
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -221,8 +282,14 @@ export default function MyBookings() {
                 <div className="text-right">
                   <p className="text-sm text-gray-600 mb-1">Total Amount</p>
                   <p className="text-2xl font-bold text-blue-600">
-                    ৳{viewData.package?.price ? (Number(viewData.package.price) * viewData.persons).toLocaleString() : 'N/A'}
+                    ৳{viewData.total_price ? Number(viewData.total_price).toLocaleString() : 'N/A'}
                   </p>
+                  {viewData.payment_status === 'partially_paid' && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-600 mb-1">Paid: <span className="text-green-600 font-bold">৳{viewData.paid_amount ? Number(viewData.paid_amount).toLocaleString() : '0'}</span></p>
+                      <p className="text-sm text-gray-600">Due: <span className="text-orange-600 font-bold">৳{((viewData.total_price || 0) - (viewData.paid_amount || 0)).toLocaleString()}</span></p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -304,6 +371,17 @@ export default function MyBookings() {
           </div>
         </div>
       )}
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={showReviewModal}
+        onClose={() => {
+          setShowReviewModal(false);
+          setSelectedBooking(null);
+          dispatch(fetchMyReviews()); // Refresh reviews after submission
+        }}
+        booking={selectedBooking}
+      />
     </div>
   );
 }

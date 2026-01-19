@@ -91,7 +91,9 @@ class PaymentController extends Controller
         ];
 
         try {
-            $response = Http::asForm()->post($apiUrl, $postData);
+            $response = Http::withOptions([
+                'verify' => false, // Disable SSL verification for development
+            ])->asForm()->post($apiUrl, $postData);
             $result = $response->json();
 
             if (isset($result['status']) && $result['status'] === 'SUCCESS') {
@@ -131,9 +133,15 @@ class PaymentController extends Controller
         if ($this->validatePayment($tranId, $request->all())) {
             $booking = Booking::find($bookingId);
             if ($booking) {
+                // Check if it's advance or full payment
+                $paymentAmount = floatval($request->amount ?? 0);
+                $totalPrice = floatval($booking->total_price);
+                $isAdvancePayment = $paymentAmount < $totalPrice;
+                
                 $booking->update([
-                    'payment_status' => 'completed',
-                    'status' => 'confirmed',
+                    'payment_status' => $isAdvancePayment ? 'partially_paid' : 'paid',
+                    'status' => 'pending', // Always pending, admin will confirm
+                    'paid_amount' => $paymentAmount,
                     'payment_details' => json_encode($request->all()),
                 ]);
 
@@ -201,7 +209,9 @@ class PaymentController extends Controller
             ? 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php'
             : 'https://securepay.sslcommerz.com/validator/api/validationserverAPI.php';
 
-        $response = Http::get($validationUrl, [
+        $response = Http::withOptions([
+            'verify' => false, // Disable SSL verification for development
+        ])->get($validationUrl, [
             'val_id' => $data['val_id'] ?? '',
             'store_id' => $storeId,
             'store_passwd' => $storePassword,

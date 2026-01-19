@@ -12,6 +12,7 @@ import countryReducer from './slices/countrySlice';
 import placeReducer from './slices/placeSlice';
 import galleryReducer from './slices/gallerySlice';
 import pageContentReducer from './slices/pageContentSlice';
+import reviewReducer from './slices/reviewSlice';
 
 
 export const store = configureStore({
@@ -29,6 +30,7 @@ export const store = configureStore({
     places: placeReducer,
     gallery: galleryReducer,
     pageContent: pageContentReducer,
+    reviews: reviewReducer,
   },
 });
 

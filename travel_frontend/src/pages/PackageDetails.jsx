@@ -3,14 +3,18 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPackageById } from "../redux/slices/packageSlice";
+import { fetchPackageReviews } from "../redux/slices/reviewSlice";
+import { FaStar } from "react-icons/fa";
 
 export default function PackageDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { currentPackage: pkg, loading } = useSelector((state) => state.packages);
+  const { packageReviews, averageRating, totalReviews, loading: reviewsLoading } = useSelector((state) => state.reviews);
 
   useEffect(() => {
     dispatch(fetchPackageById(id));
+    dispatch(fetchPackageReviews(id));
   }, [dispatch, id]);
 
   // Parse list from string
@@ -18,6 +22,30 @@ export default function PackageDetails() {
     if (!str) return [];
     if (Array.isArray(str)) return str;
     return str.split('\n').filter(item => item.trim() !== '');
+  };
+
+  // Render star rating
+  const renderStars = (rating) => {
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <FaStar
+            key={star}
+            className={star <= rating ? "text-yellow-400" : "text-gray-300"}
+            size={18}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
 
   if (loading) {
@@ -166,6 +194,56 @@ export default function PackageDetails() {
             </div>
           </div>
         )}
+
+        {/* Reviews Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <FaStar className="text-yellow-400" />
+              <span>Customer Reviews</span>
+            </h2>
+            {totalReviews > 0 && (
+              <div className="text-right">
+                <div className="flex items-center gap-2 mb-1">
+                  {renderStars(Math.round(averageRating))}
+                  <span className="text-2xl font-bold text-gray-800">{averageRating}</span>
+                </div>
+                <p className="text-sm text-gray-600">{totalReviews} review{totalReviews !== 1 ? 's' : ''}</p>
+              </div>
+            )}
+          </div>
+
+          {reviewsLoading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Loading reviews...</p>
+            </div>
+          ) : packageReviews.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50 rounded-lg">
+              <FaStar className="text-5xl text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No reviews yet. Be the first to review this package!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {packageReviews.slice(0, 5).map((review) => (
+                <div key={review.id} className="border-b border-gray-200 pb-4 last:border-0">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-semibold text-gray-800">{review.user?.name || 'Anonymous'}</p>
+                      <p className="text-xs text-gray-500">{formatDate(review.created_at)}</p>
+                    </div>
+                    {renderStars(review.rating)}
+                  </div>
+                  <p className="text-gray-700">{review.comment}</p>
+                </div>
+              ))}
+              {packageReviews.length > 5 && (
+                <p className="text-center text-sm text-gray-500 pt-2">
+                  Showing 5 of {packageReviews.length} reviews
+                </p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Booking Button */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl shadow-xl p-8 text-center">

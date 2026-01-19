@@ -47,6 +47,25 @@ class QueryController extends Controller
         ]);
     }
 
+    // Reply to query (Admin only)
+    public function reply(Request $request, $id)
+    {
+        $request->validate([
+            'admin_reply' => 'required|string',
+        ]);
+
+        $query = Query::findOrFail($id);
+        $query->update([
+            'admin_reply' => $request->admin_reply,
+            'is_read' => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Reply sent successfully!',
+            'query' => $query,
+        ]);
+    }
+
     // Delete query (Admin only)
     public function destroy($id)
     {

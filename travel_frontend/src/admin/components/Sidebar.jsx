@@ -1,18 +1,15 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../redux/slices/authSlice";
-import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMoneyBillWave, FaChartLine, FaSignOutAlt, FaMapMarkerAlt, FaImages, FaFileAlt, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaHome, FaUsers, FaBox, FaShoppingCart, FaEnvelope, FaMoneyBillWave, FaChartLine, FaSignOutAlt, FaMapMarkerAlt, FaImages, FaStar } from "react-icons/fa";
 import logo from "../../assets/images/logo.png";
-import { useState } from "react";
 
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isPagesOpen, setIsPagesOpen] = useState(false);
   
   const isActive = (path) => location.pathname === path;
-  const isPageActive = location.pathname.includes("/admin/pages");
 
   const handleSignOut = async () => {
     await dispatch(logoutUser());
@@ -82,45 +79,14 @@ export default function Sidebar() {
         <FaImages /> Gallery
       </Link>
 
-      {/* Pages - Collapsible */}
-      <div>
-        <button
-          onClick={() => setIsPagesOpen(!isPagesOpen)}
-          className={`flex items-center justify-between w-full px-4 py-3 rounded-lg text-lg transition 
-          ${isPageActive ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-        >
-          <div className="flex items-center gap-3">
-            <FaFileAlt /> Pages
-          </div>
-          {isPagesOpen ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
-        </button>
-        
-        {isPagesOpen && (
-          <div className="ml-4 mt-2 space-y-1">
-            <Link
-              to="/admin/pages/home"
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-base transition 
-              ${isActive("/admin/pages/home") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/admin/pages/about"
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-base transition 
-              ${isActive("/admin/pages/about") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-            >
-              About Us
-            </Link>
-            <Link
-              to="/admin/pages/contact"
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-base transition 
-              ${isActive("/admin/pages/contact") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
-            >
-              Contact
-            </Link>
-          </div>
-        )}
-      </div>
+      {/* Reviews */}
+      <Link
+        to="/admin/reviews"
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        ${isActive("/admin/reviews") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
+      >
+        <FaStar /> Reviews
+      </Link>
 
       {/* Messages */}
       <Link

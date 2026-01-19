@@ -104,6 +104,24 @@ class BookingController extends Controller
         ]);
     }
 
+    // Mark booking as fully paid (Admin only)
+    public function markAsPaid(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        // Update payment to fully paid
+        $booking->update([
+            'paid_amount' => $booking->total_price,
+            'payment_status' => 'paid',
+            'payment_method' => $request->payment_method ?? $booking->payment_method ?? 'manual',
+        ]);
+
+        return response()->json([
+            'message' => 'Booking marked as fully paid!',
+            'booking' => $booking->load(['user', 'package']),
+        ]);
+    }
+
     // Delete booking (Admin only)
     public function destroy($id)
     {

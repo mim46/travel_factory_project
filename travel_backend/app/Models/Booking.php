@@ -18,8 +18,12 @@ class Booking extends Model
         'persons',
         'travel_date',
         'special_request',
+        'passport_number',
+        'passport_expiry',
+        'visa_status',
         'status',
         'total_price',
+        'paid_amount',
         'payment_method',
         'payment_status',
         'transaction_id',
@@ -28,6 +32,7 @@ class Booking extends Model
 
     protected $casts = [
         'travel_date' => 'date',
+        'passport_expiry' => 'date',
     ];
 
     public function user()
@@ -38,5 +43,10 @@ class Booking extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
     }
 }

@@ -14,6 +14,7 @@ class Query extends Model
         'email',
         'message',
         'is_read',
+        'admin_reply',
     ];
 
     protected $casts = [

@@ -68,6 +68,30 @@ export default function Bookings() {
     }
   };
 
+  const handleMarkAsPaid = async (bookingId) => {
+    if (!confirm("✅ Mark this booking as fully paid? This will set paid_amount to total_price.")) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8000/api/admin/bookings/${bookingId}/mark-paid`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert("✅ Booking marked as fully paid!");
+        dispatch(fetchAllBookings());
+      } else {
+        alert("❌ Failed to mark as paid");
+      }
+    } catch (error) {
+      alert("❌ Error: " + error.message);
+    }
+  };
+
   const handleView = (booking) => {
     setViewData(booking);
     setShowViewModal(true);
@@ -86,9 +110,9 @@ export default function Bookings() {
   const pendingCount = bookings.filter(b => b.status === "pending").length;
   const confirmedCount = bookings.filter(b => b.status === "confirmed").length;
   const cancelledCount = bookings.filter(b => b.status === "cancelled").length;
-  const paidCount = bookings.filter(b => b.payment_status === "completed").length;
+  const paidCount = bookings.filter(b => b.payment_status === "paid" || b.payment_status === "completed").length;
   const totalRevenue = bookings
-    .filter(b => b.payment_status === "completed")
+    .filter(b => b.payment_status === "paid" || b.payment_status === "completed")
     .reduce((sum, b) => sum + (parseFloat(b.total_price) || 0), 0);
 
   const getStatusColor = (status) => {
@@ -246,11 +270,13 @@ export default function Bookings() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                        booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                        booking.payment_status === 'partially_paid' ? 'bg-blue-100 text-blue-700' :
                         booking.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                         'bg-red-100 text-red-700'
                       }`}>
-                        {booking.payment_status === 'completed' ? '✅ Paid' : 
+                        {booking.payment_status === 'paid' || booking.payment_status === 'completed' ? '✅ Paid' : 
+                         booking.payment_status === 'partially_paid' ? '💰 Partially Paid' :
                          booking.payment_status === 'pending' ? '⏳ Pending' : 
                          '❌ Failed'}
                       </span>
@@ -303,6 +329,16 @@ export default function Bookings() {
                             title="Set as Pending"
                           >
                             <FaClock size={16} />
+                          </button>
+                        )}
+
+                        {booking.payment_status === 'partially_paid' && (
+                          <button
+                            onClick={() => handleMarkAsPaid(booking.id)}
+                            className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition"
+                            title="Mark as Fully Paid"
+                          >
+                            <FaMoneyBillWave size={16} />
                           </button>
                         )}
 
@@ -377,8 +413,14 @@ export default function Bookings() {
                 <div className="text-right">
                   <p className="text-sm text-gray-600 mb-1">Total Amount</p>
                   <p className="text-2xl font-bold text-blue-600">
-                    ৳{viewData.package?.price ? (Number(viewData.package.price) * viewData.persons).toLocaleString() : 'N/A'}
+                    ৳{viewData.total_price ? Number(viewData.total_price).toLocaleString() : 'N/A'}
                   </p>
+                  {viewData.payment_status === 'partially_paid' && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-600 mb-1">Paid: <span className="text-green-600 font-bold">৳{viewData.paid_amount ? Number(viewData.paid_amount).toLocaleString() : '0'}</span></p>
+                      <p className="text-sm text-gray-600">Due: <span className="text-orange-600 font-bold">৳{((viewData.total_price || 0) - (viewData.paid_amount || 0)).toLocaleString()}</span></p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -457,15 +499,29 @@ export default function Bookings() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Payment Status</p>
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 ${
-                        viewData.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                        viewData.payment_status === 'paid' || viewData.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                        viewData.payment_status === 'partially_paid' ? 'bg-blue-100 text-blue-700' :
                         viewData.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                         'bg-red-100 text-red-700'
                       }`}>
-                        {viewData.payment_status === 'completed' ? '✅ Paid' : 
+                        {viewData.payment_status === 'paid' || viewData.payment_status === 'completed' ? '✅ Paid' : 
+                         viewData.payment_status === 'partially_paid' ? '💰 Partially Paid' :
                          viewData.payment_status === 'pending' ? '⏳ Pending' : 
                          '❌ Failed'}
                       </span>
+                      {viewData.payment_status === 'partially_paid' && (
+                        <div className="mt-3 space-y-1">
+                          <p className="text-sm">
+                            <span className="text-gray-600">Paid:</span> 
+                            <span className="text-green-600 font-bold ml-2">৳{viewData.paid_amount ? Number(viewData.paid_amount).toLocaleString() : '0'}</span>
+                          </p>
+                          <p className="text-sm">
+                            <span className="text-gray-600">Due:</span> 
+                            <span className="text-orange-600 font-bold ml-2">৳{((viewData.total_price || 0) - (viewData.paid_amount || 0)).toLocaleString()}</span>
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                   {viewData.payment_method && (
@@ -497,6 +553,17 @@ export default function Bookings() {
 
               {/* Action Buttons */}
               <div className="flex gap-3 justify-end">
+                {viewData.payment_status === 'partially_paid' && (
+                  <button 
+                    onClick={() => {
+                      handleMarkAsPaid(viewData.id);
+                      setShowViewModal(false);
+                    }} 
+                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition font-semibold flex items-center gap-2"
+                  >
+                    <FaMoneyBillWave /> Mark as Fully Paid
+                  </button>
+                )}
                 {viewData.status === "pending" && (
                   <>
                     <button 
