@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-import { FaBell } from "react-icons/fa";
 
 export default function Navbar() {
   const user = useSelector((state) => state.auth.user) || JSON.parse(localStorage.getItem("user"));
@@ -14,12 +13,6 @@ export default function Navbar() {
 
       {/* Profile Section */}
       <div className="flex items-center gap-4">
-        {/* Notifications */}
-        <button className="relative p-2 hover:bg-gray-100 rounded-lg transition">
-          <FaBell className="text-gray-600 text-xl" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
-
         {/* Profile */}
         <div className="flex items-center gap-3">
           <img

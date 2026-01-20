@@ -134,6 +134,14 @@ export default function Booking() {
   minDate.setDate(minDate.getDate() + 5);
   const minDateString = minDate.toISOString().split("T")[0];
 
+  // Calculate minimum passport expiry (travel date + 6 months)
+  const calculateMinPassportExpiry = () => {
+    if (!formData.travel_date) return minDateString;
+    const travelDate = new Date(formData.travel_date);
+    travelDate.setMonth(travelDate.getMonth() + 6);
+    return travelDate.toISOString().split("T")[0];
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -392,11 +400,11 @@ export default function Booking() {
                       value={formData.passport_expiry}
                       onChange={handleChange}
                       required
-                      min={minDateString}
+                      min={calculateMinPassportExpiry()}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Passport must be valid for at least 6 months
+                      Passport must be valid for at least 6 months beyond travel date
                     </p>
                   </div>
 

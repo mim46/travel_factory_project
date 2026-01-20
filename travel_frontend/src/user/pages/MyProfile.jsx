@@ -106,20 +106,6 @@ export default function MyProfile() {
       </div>
 
       <div className="bg-white rounded-xl shadow-md p-8">
-        {/* Profile Picture */}
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              alt="profile"
-              className="w-32 h-32 rounded-full border-4 border-blue-200"
-            />
-            <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition">
-              📷
-            </button>
-          </div>
-        </div>
-
         {/* Profile Form */}
         <form onSubmit={handleProfileSubmit} className="space-y-6 mb-12">
           {/* Personal Information */}
