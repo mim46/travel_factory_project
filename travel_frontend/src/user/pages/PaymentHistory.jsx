@@ -57,11 +57,11 @@ export default function PaymentHistory() {
         </div>
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
           <p className="text-white/80 text-sm mb-1">Total Spent</p>
-          <p className="text-4xl font-bold">৳{payments.reduce((sum, p) => sum + p.paid_amount, 0).toLocaleString()}</p>
+          <p className="text-4xl font-bold">৳{payments.reduce((sum, p) => sum + (Number(p.paid_amount) || 0), 0).toFixed(2)}</p>
         </div>
         <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 rounded-xl shadow-lg text-white">
           <p className="text-white/80 text-sm mb-1">Last Payment</p>
-          <p className="text-4xl font-bold">৳{payments[0]?.paid_amount?.toLocaleString() || 0}</p>
+          <p className="text-4xl font-bold">৳{Number(payments[0]?.paid_amount || 0).toFixed(2)}</p>
         </div>
       </div>
 

@@ -1,3 +1,5 @@
+import aboutUsImage from '../assets/images/aboutus.jpg';
+
 export default function AboutUs() {
     return (
       <section id="about" className="py-0 px-2 bg-white -mt-24">
@@ -18,9 +20,9 @@ export default function AboutUs() {
           {/* LEFT — Travel Illustration */}
           <div className="flex justify-center">
             <img
-              src="https://cdn-icons-png.flaticon.com/512/201/201623.png"
+              src={aboutUsImage}
               alt="Travel illustration"
-              className="w-64 md:w-72 drop-shadow-2xl"
+              className="w-full md:w-[500px] drop-shadow-2xl rounded-lg"
             />
           </div>
   
