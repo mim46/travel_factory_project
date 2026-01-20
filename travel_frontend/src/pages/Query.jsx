@@ -49,18 +49,22 @@ export default function Query() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-300 to-yellow-200 p-4 py-16">
 
       {/* Glass Box */}
-      <div className="bg-white/90 backdrop-blur-md shadow-2xl rounded-3xl w-full max-w-2xl p-8">
-        
-        <h2 className="text-3xl font-bold text-[#1a4d4f] mb-6 text-center">
-          Plan Your Custom Tour
+      <div className="
+        w-full max-w-2xl p-8 rounded-2xl
+        bg-white/40 backdrop-blur-md 
+        shadow-xl border border-white/30 
+      ">
+
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Query
         </h2>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          
+        <form onSubmit={handleSubmit} className="space-y-5 text-left">
+
           {/* Name */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Your Name *</label>
+            <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Your Name *</label>
             <input
               type="text"
               name="name"
@@ -68,13 +72,13 @@ export default function Query() {
               placeholder="Enter your full name"
               value={form.name}
               onChange={handleChange}
-              className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition text-sm"
+              className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-sm"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Your Email *</label>
+            <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Your Email *</label>
             <input
               type="email"
               name="email"
@@ -82,13 +86,13 @@ export default function Query() {
               placeholder="example@email.com"
               value={form.email}
               onChange={handleChange}
-              className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition text-sm"
+              className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-sm"
             />
           </div>
 
           {/* Phone */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Phone Number *</label>
+            <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Phone Number *</label>
             <input
               type="tel"
               name="phone"
@@ -96,14 +100,14 @@ export default function Query() {
               placeholder="+880 1XXX-XXXXXX"
               value={form.phone}
               onChange={handleChange}
-              className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition text-sm"
+              className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-sm"
             />
           </div>
 
           {/* Destination & Date */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Destination *</label>
+              <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Destination *</label>
               <input
                 type="text"
                 name="destination"
@@ -111,12 +115,12 @@ export default function Query() {
                 placeholder="e.g., Cox's Bazar"
                 value={form.destination}
                 onChange={handleChange}
-                className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition text-sm"
+                className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Travel Date *</label>
+              <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Travel Date *</label>
               <input
                 type="date"
                 name="travel_date"
@@ -124,7 +128,7 @@ export default function Query() {
                 value={form.travel_date}
                 onChange={handleChange}
                 min={new Date().toISOString().split('T')[0]}
-                className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition text-sm"
+                className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-sm"
               />
             </div>
           </div>
@@ -132,7 +136,7 @@ export default function Query() {
           {/* Persons & Budget */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Number of Persons *</label>
+              <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Number of Persons *</label>
               <input
                 type="number"
                 name="persons"
@@ -140,43 +144,43 @@ export default function Query() {
                 required
                 value={form.persons}
                 onChange={handleChange}
-                className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition text-sm"
+                className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Budget (৳)</label>
+              <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Budget (৳)</label>
               <input
                 type="number"
                 name="budget"
                 placeholder="e.g., 50000"
                 value={form.budget}
                 onChange={handleChange}
-                className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition text-sm"
+                className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-sm"
               />
             </div>
           </div>
 
           {/* Message */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1.5 text-sm">Additional Requirements</label>
+            <label className="block text-gray-800 font-semibold mb-1.5 text-sm">Additional Requirements</label>
             <textarea
               name="message"
               placeholder="Tell us about your special requirements or preferences..."
               rows="4"
               value={form.message}
               onChange={handleChange}
-              className="p-3 rounded-lg w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition resize-none text-sm"
+              className="p-3 rounded-lg w-full border border-blue-400 bg-white/70 focus:outline-none focus:ring-2 focus:ring-blue-300 transition resize-none text-sm"
             />
           </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:scale-105 text-base"
-        >
-          Submit Query
-        </button>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-lg shadow-md transition transform hover:scale-105 text-base"
+          >
+            Submit Query
+          </button>
         </form>
 
       </div>

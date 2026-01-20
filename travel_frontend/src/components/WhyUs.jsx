@@ -1,4 +1,4 @@
-import { FaMapMarkedAlt, FaPlane, FaHeadset, FaDollarSign } from "react-icons/fa";
+import { FaMapMarkedAlt, FaPlane, FaHeadset } from "react-icons/fa";
 
 export default function WhyUs() {
   return (
@@ -32,7 +32,7 @@ export default function WhyUs() {
 
           {/* Card 2 */}
           <div className="bg-white shadow-lg hover:shadow-2xl transition p-10 rounded-3xl border border-blue-100">
-            <FaDollarSign className="text-yellow-500 text-6xl mx-auto mb-5" />
+            <div className="text-yellow-500 text-6xl font-black mx-auto mb-5 h-[60px] flex items-center justify-center">৳</div>
             <h3 className="font-semibold text-xl text-gray-900">Best Price Guarantee</h3>
             <p className="text-gray-600 mt-2 leading-relaxed">
               Best deals without compromising comfort.

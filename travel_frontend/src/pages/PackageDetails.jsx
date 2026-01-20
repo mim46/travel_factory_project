@@ -41,10 +41,10 @@ export default function PackageDetails() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
@@ -85,14 +85,13 @@ export default function PackageDetails() {
             className="w-full h-64 md:h-96 object-cover rounded-2xl shadow-xl"
           />
           <div className="absolute top-4 left-4">
-            <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
-              pkg.package_type === 'domestic' ? 'bg-green-500 text-white' :
+            <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${pkg.package_type === 'domestic' ? 'bg-green-500 text-white' :
               pkg.package_type === 'international' ? 'bg-purple-500 text-white' :
-              'bg-orange-500 text-white'
-            }`}>
+                'bg-orange-500 text-white'
+              }`}>
               {pkg.package_type === 'domestic' ? '🏠 Domestic' :
-               pkg.package_type === 'international' ? '✈️ International' :
-               '💰 Budget'}
+                pkg.package_type === 'international' ? '✈️ International' :
+                  '💰 Budget'}
             </span>
           </div>
         </div>
@@ -257,12 +256,7 @@ export default function PackageDetails() {
           </Link>
         </div>
 
-        {/* Back Button */}
-        <div className="mt-6 text-center">
-          <Link to="/" className="text-blue-600 hover:text-blue-800 font-semibold">
-            ← Back to Home
-          </Link>
-        </div>
+
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export default function Booking() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const { currentPackage: pkg, loading } = useSelector((state) => state.packages);
   const { user, token } = useSelector((state) => state.auth);
 
@@ -57,7 +57,7 @@ export default function Booking() {
 
   const handleBooking = async (e) => {
     e.preventDefault();
-    
+
     if (!token) {
       alert("⚠️ Please login to book a package");
       navigate("/login");
@@ -72,7 +72,7 @@ export default function Booking() {
         alert("❌ Sorry, this group tour is fully booked!");
         return;
       }
-      
+
       if (formData.persons > availableSeats) {
         alert(`❌ Only ${availableSeats} seats available! Please reduce the number of persons.`);
         return;
@@ -118,8 +118,8 @@ export default function Booking() {
       <div className="min-h-screen flex justify-center items-center">
         <div className="text-center">
           <p className="text-2xl text-red-600 mb-4">❌ Package not found</p>
-          <button 
-            onClick={() => navigate("/")} 
+          <button
+            onClick={() => navigate("/")}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
             Go Back Home
@@ -160,11 +160,10 @@ export default function Booking() {
                   <p className="text-lg">
                     <span className="font-semibold">৳{Number(pkg.price).toLocaleString()}</span> | {pkg.duration}
                   </p>
-                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                    pkg.tour_type === 'group' 
-                      ? 'bg-purple-500 text-white' 
+                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${pkg.tour_type === 'group'
+                      ? 'bg-purple-500 text-white'
                       : 'bg-green-500 text-white'
-                  }`}>
+                    }`}>
                     {pkg.tour_type === 'group' ? '👥 Group Tour' : '🧳 Individual Tour'}
                   </span>
                 </div>
@@ -195,7 +194,7 @@ export default function Booking() {
                   <p className="text-sm text-gray-600">Minimum Required</p>
                 </div>
               </div>
-              
+
               {pkg.is_tour_confirmed ? (
                 <div className="mt-4 text-center">
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold">
@@ -302,7 +301,7 @@ export default function Booking() {
                 <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                   <FaCalendar className="text-blue-600" /> Travel Date *
                 </label>
-                
+
                 {pkg.tour_type === "group" ? (
                   // Group Tour: Dropdown with available dates
                   <select
@@ -323,7 +322,7 @@ export default function Booking() {
                           dates = [];
                         }
                       }
-                      
+
                       return dates && Array.isArray(dates) && dates.length > 0 ? (
                         dates.map((date, idx) => (
                           <option key={idx} value={date}>
@@ -352,11 +351,11 @@ export default function Booking() {
                   />
                 )}
                 <p className="text-xs text-gray-500 mt-1">
-                  {pkg.tour_type === "group" 
-                    ? "Select from available group tour dates" 
-                    : "Booking must be at least 5 days in advance"}
+                  {pkg.tour_type === "group"
+                    ? "Select from available group tour dates"
+                    : ""}
                 </p>
-                
+
                 {pkg.tour_type === "group" && (
                   <p className="text-xs text-gray-500 mt-1">
                     Fixed departure dates only
@@ -371,7 +370,7 @@ export default function Booking() {
                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                   <FaPassport className="text-blue-600" /> Passport & Visa Information
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Passport Number */}
                   <div>
@@ -403,9 +402,7 @@ export default function Booking() {
                       min={calculateMinPassportExpiry()}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Passport must be valid for at least 6 months beyond travel date
-                    </p>
+
                   </div>
 
                   {/* Visa Status */}

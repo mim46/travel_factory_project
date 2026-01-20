@@ -54,7 +54,7 @@ export default function Gallery() {
 
     const formData = new FormData();
     formData.append("category", form.category);
-    
+
     if (imageFile) {
       formData.append("image", imageFile);
     }
@@ -82,9 +82,9 @@ export default function Gallery() {
   };
 
   return (
-    <div className="p-8">
+    <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Gallery Management</h1>
+        <h1 className="text-3xl font-bold text-[#1C7DA2]">Gallery Management</h1>
         <div className="flex gap-4 items-center">
           <select
             value={filterCategory}
@@ -117,17 +117,17 @@ export default function Gallery() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {galleries.map((image) => (
             <div key={image.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition">
-              <img 
-                src={`${BASE_URL}/${image.image}`} 
-                alt={image.category} 
-                className="w-full h-48 object-cover" 
+              <img
+                src={`${BASE_URL}/${image.image}`}
+                alt={image.category}
+                className="w-full h-48 object-cover"
               />
               <div className="p-4">
                 <div className="mb-3">
                   <span className="inline-block bg-blue-100 text-blue-600 text-sm font-semibold px-3 py-1 rounded">
-                    {image.category === 'travel_experiences' ? 'Travel Experiences' : 
-                     image.category === 'travel_factory' ? 'Travel Factory' : 
-                     image.category === 'events_memories' ? 'Events & Memories' : image.category}
+                    {image.category === 'travel_experiences' ? 'Travel Experiences' :
+                      image.category === 'travel_factory' ? 'Travel Factory' :
+                        image.category === 'events_memories' ? 'Events & Memories' : image.category}
                   </span>
                 </div>
                 <div className="flex gap-2">

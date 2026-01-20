@@ -6,7 +6,7 @@ import { FaStar, FaCheck, FaTrash, FaEye, FaTimes, FaClock } from "react-icons/f
 export default function Reviews() {
   const dispatch = useDispatch();
   const { allReviews, pendingReviews, loading } = useSelector((state) => state.reviews);
-  
+
   const [activeTab, setActiveTab] = useState("pending"); // pending, all
   const [viewModal, setViewModal] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
@@ -55,9 +55,9 @@ export default function Reviews() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -67,26 +67,25 @@ export default function Reviews() {
   const reviews = activeTab === "pending" ? pendingReviews : allReviews;
 
   return (
-    <div className="p-8">
+    <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">⭐ Reviews Management</h1>
-        <p className="text-gray-600">Approve or delete customer reviews</p>
+        <h1 className="text-3xl font-bold text-[#1C7DA2] mb-2">Reviews Management</h1>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">⏳ Pending Reviews</p>
-          <p className="text-3xl font-bold">{pendingReviews.length}</p>
+          <p className="text-white/95 text-base font-semibold mb-1">⏳ Pending Reviews</p>
+          <p className="text-2xl font-extrabold">{pendingReviews.length}</p>
         </div>
         <div className="bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">✅ Approved Reviews</p>
-          <p className="text-3xl font-bold">{allReviews.filter(r => r.is_approved).length}</p>
+          <p className="text-white/95 text-base font-semibold mb-1">✅ Approved Reviews</p>
+          <p className="text-2xl font-extrabold">{allReviews.filter(r => r.is_approved).length}</p>
         </div>
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">📊 Total Reviews</p>
-          <p className="text-3xl font-bold">{allReviews.length}</p>
+          <p className="text-white/95 text-base font-semibold mb-1">📊 Total Reviews</p>
+          <p className="text-2xl font-extrabold">{allReviews.length}</p>
         </div>
       </div>
 
@@ -95,22 +94,20 @@ export default function Reviews() {
         <div className="flex border-b">
           <button
             onClick={() => setActiveTab("pending")}
-            className={`flex-1 py-4 px-6 font-semibold transition ${
-              activeTab === "pending"
-                ? "text-yellow-600 border-b-2 border-yellow-600"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            className={`flex-1 py-4 px-6 font-semibold transition ${activeTab === "pending"
+              ? "text-yellow-600 border-b-2 border-yellow-600"
+              : "text-gray-600 hover:text-gray-800"
+              }`}
           >
             <FaClock className="inline mr-2" />
             Pending ({pendingReviews.length})
           </button>
           <button
             onClick={() => setActiveTab("all")}
-            className={`flex-1 py-4 px-6 font-semibold transition ${
-              activeTab === "all"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            className={`flex-1 py-4 px-6 font-semibold transition ${activeTab === "all"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-600 hover:text-gray-800"
+              }`}
           >
             <FaStar className="inline mr-2" />
             All Reviews ({allReviews.length})
@@ -164,11 +161,10 @@ export default function Reviews() {
                       {formatDate(review.created_at)}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        review.is_approved
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${review.is_approved
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                        }`}>
                         {review.is_approved ? "✅ Approved" : "⏳ Pending"}
                       </span>
                     </td>
@@ -249,11 +245,10 @@ export default function Reviews() {
                   <p>Submitted: {formatDate(selectedReview.created_at)}</p>
                 </div>
                 <div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    selectedReview.is_approved
-                      ? "bg-green-100 text-green-700"
-                      : "bg-yellow-100 text-yellow-700"
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${selectedReview.is_approved
+                    ? "bg-green-100 text-green-700"
+                    : "bg-yellow-100 text-yellow-700"
+                    }`}>
                     {selectedReview.is_approved ? "✅ Approved" : "⏳ Pending"}
                   </span>
                 </div>

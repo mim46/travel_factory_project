@@ -40,7 +40,7 @@ export default function Testimonials() {
   }
 
   return (
-    <div className="py-16 bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="py-16 bg-white">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">

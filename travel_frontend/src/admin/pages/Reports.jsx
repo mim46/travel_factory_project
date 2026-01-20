@@ -11,7 +11,7 @@ export default function Reports() {
   const [selectedStat, setSelectedStat] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
-  
+
   // Date filter states
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -28,7 +28,7 @@ export default function Reports() {
       const token = localStorage.getItem('token');
       let endpoint = '';
 
-      switch(statType) {
+      switch (statType) {
         case 'users':
           endpoint = 'http://localhost:8000/api/admin/users';
           break;
@@ -66,10 +66,10 @@ export default function Reports() {
 
       if (response.ok) {
         const data = await response.json();
-        
+
         // Filter data based on type
         let filteredData = data;
-        
+
         if (statType === 'pending_bookings') {
           filteredData = data.filter(b => b.status === 'pending');
         } else if (statType === 'confirmed_bookings') {
@@ -81,7 +81,7 @@ export default function Reports() {
         } else if (statType === 'budget_packages') {
           filteredData = data.filter(p => p.package_type === 'budget');
         }
-        
+
         setTableData(filteredData);
       }
     } catch (error) {
@@ -131,9 +131,8 @@ export default function Reports() {
                     <td className="p-3">{user.email}</td>
                     <td className="p-3">{user.phone || 'N/A'}</td>
                     <td className="p-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+                        }`}>
                         {user.role}
                       </span>
                     </td>
@@ -148,15 +147,15 @@ export default function Reports() {
     }
 
     // Packages Table
-    if (selectedStat === 'packages' || selectedStat === 'domestic_packages' || 
-        selectedStat === 'international_packages' || selectedStat === 'budget_packages') {
+    if (selectedStat === 'packages' || selectedStat === 'domestic_packages' ||
+      selectedStat === 'international_packages' || selectedStat === 'budget_packages') {
       return (
         <div className="bg-white rounded-lg shadow overflow-hidden mt-8">
           <div className="p-4 bg-green-600 text-white">
             <h3 className="text-xl font-bold">
               {selectedStat === 'domestic_packages' ? 'Domestic Packages' :
-               selectedStat === 'international_packages' ? 'International Packages' :
-               selectedStat === 'budget_packages' ? 'Budget Packages' : 'All Packages'}
+                selectedStat === 'international_packages' ? 'International Packages' :
+                  selectedStat === 'budget_packages' ? 'Budget Packages' : 'All Packages'}
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -194,14 +193,14 @@ export default function Reports() {
     }
 
     // Bookings Table
-    if (selectedStat === 'bookings' || selectedStat === 'pending_bookings' || 
-        selectedStat === 'confirmed_bookings') {
+    if (selectedStat === 'bookings' || selectedStat === 'pending_bookings' ||
+      selectedStat === 'confirmed_bookings') {
       return (
         <div className="bg-white rounded-lg shadow overflow-hidden mt-8">
           <div className="p-4 bg-purple-600 text-white">
             <h3 className="text-xl font-bold">
               {selectedStat === 'pending_bookings' ? 'Pending Bookings' :
-               selectedStat === 'confirmed_bookings' ? 'Confirmed Bookings' : 'All Bookings'}
+                selectedStat === 'confirmed_bookings' ? 'Confirmed Bookings' : 'All Bookings'}
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -228,20 +227,18 @@ export default function Reports() {
                     <td className="p-3 text-center">{booking.persons}</td>
                     <td className="p-3 text-right font-bold text-blue-600">৳{Number(booking.total_price).toLocaleString()}</td>
                     <td className="p-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
                         booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
+                          'bg-red-100 text-red-700'
+                        }`}>
                         {booking.status}
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
                         booking.payment_status === 'partially_paid' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-700'
-                      }`}>
+                          'bg-gray-100 text-gray-700'
+                        }`}>
                         {booking.payment_status}
                       </span>
                     </td>
@@ -258,11 +255,10 @@ export default function Reports() {
   if (loading) return <div className="p-6">Loading reports...</div>;
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">📊 Reports & Analytics</h2>
-          <p className="text-gray-600 mt-1">Click on any stat card to view detailed data</p>
+          <h2 className="text-3xl font-bold text-[#1C7DA2]">Reports & Analytics</h2>
         </div>
         {selectedStat && (
           <button
@@ -279,10 +275,7 @@ export default function Reports() {
 
       {/* Date Filter Section - Always Visible */}
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl shadow-lg border-2 border-indigo-200">
-        <div className="flex items-center gap-2 mb-4">
-          <FaCalendarAlt className="text-indigo-600 text-xl" />
-          <h3 className="text-xl font-bold text-gray-800">📊 Package Sales Report by Date Range</h3>
-        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">From Date</label>
@@ -307,7 +300,7 @@ export default function Reports() {
               onClick={fetchSalesReport}
               className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition font-semibold shadow-lg"
             >
-              🔍 Generate Sales Report
+              Generate Sales Report
             </button>
           </div>
         </div>
@@ -316,75 +309,75 @@ export default function Reports() {
       {/* Stats Grid */}
       {dashboardStats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div 
+          <div
             onClick={() => fetchStatDetails('users')}
             className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">Total Users</h3>
-            <p className="text-4xl font-bold">{dashboardStats.total_users}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">Total Users</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.total_users}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
 
-          <div 
+          <div
             onClick={() => fetchStatDetails('packages')}
             className="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">Total Packages</h3>
-            <p className="text-4xl font-bold">{dashboardStats.total_packages}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">Total Packages</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.total_packages}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
 
-          <div 
+          <div
             onClick={() => fetchStatDetails('bookings')}
             className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">Total Bookings</h3>
-            <p className="text-4xl font-bold">{dashboardStats.total_bookings}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">Total Bookings</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.total_bookings}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
 
-          <div 
+          <div
             onClick={() => fetchStatDetails('pending_bookings')}
             className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">Pending Bookings</h3>
-            <p className="text-4xl font-bold">{dashboardStats.pending_bookings}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">Pending Bookings</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.pending_bookings}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
 
-          <div 
+          <div
             onClick={() => fetchStatDetails('confirmed_bookings')}
             className="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">Confirmed Bookings</h3>
-            <p className="text-4xl font-bold">{dashboardStats.confirmed_bookings}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">Confirmed Bookings</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.confirmed_bookings}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
 
-          <div 
+          <div
             onClick={() => fetchStatDetails('domestic_packages')}
             className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">Domestic Packages</h3>
-            <p className="text-4xl font-bold">{dashboardStats.domestic_packages}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">Domestic Packages</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.domestic_packages}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
 
-          <div 
+          <div
             onClick={() => fetchStatDetails('international_packages')}
             className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">International Packages</h3>
-            <p className="text-4xl font-bold">{dashboardStats.international_packages}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">International Packages</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.international_packages}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
 
-          <div 
+          <div
             onClick={() => fetchStatDetails('budget_packages')}
             className="bg-gradient-to-br from-teal-500 to-teal-600 p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-all hover:scale-105 text-white"
           >
-            <h3 className="text-white/80 text-sm mb-2">Budget Packages</h3>
-            <p className="text-4xl font-bold">{dashboardStats.budget_packages}</p>
+            <h3 className="text-white/95 text-base font-bold mb-2">Budget Packages</h3>
+            <p className="text-2xl font-extrabold">{dashboardStats.budget_packages}</p>
             <p className="text-white/60 text-xs mt-2">Click to view details</p>
           </div>
         </div>

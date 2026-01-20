@@ -5,18 +5,18 @@ import {
   updateBookingStatus,
   deleteBooking,
 } from "../../redux/slices/bookingSlice";
-import { 
-  FaCalendar, 
-  FaUser, 
-  FaPhone, 
-  FaEnvelope, 
-  FaUsers, 
-  FaSearch, 
-  FaFilter, 
-  FaEye, 
-  FaCheck, 
-  FaTimes, 
-  FaTrash, 
+import {
+  FaCalendar,
+  FaUser,
+  FaPhone,
+  FaEnvelope,
+  FaUsers,
+  FaSearch,
+  FaFilter,
+  FaEye,
+  FaCheck,
+  FaTimes,
+  FaTrash,
   FaSpinner,
   FaClock,
   FaMapMarkerAlt,
@@ -33,6 +33,7 @@ export default function Bookings() {
   const [viewData, setViewData] = useState(null);
   const [updateLoading, setUpdateLoading] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(null);
+  const [viewMode, setViewMode] = useState("latest"); // "all" or "latest"
 
   useEffect(() => {
     dispatch(fetchAllBookings());
@@ -98,14 +99,27 @@ export default function Bookings() {
   };
 
   const filtered = bookings.filter((b) => {
-    const matchesSearch = 
+    const matchesSearch =
       b.name?.toLowerCase().includes(search.toLowerCase()) ||
       b.email?.toLowerCase().includes(search.toLowerCase()) ||
       b.phone?.toLowerCase().includes(search.toLowerCase()) ||
       b.package?.title?.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === "all" || b.status === statusFilter;
+
+    let matchesStatus = statusFilter === "all" || b.status === statusFilter;
+    if (statusFilter === "paid") {
+      matchesStatus = b.payment_status === "paid" || b.payment_status === "completed";
+    }
+
     return matchesSearch && matchesStatus;
   });
+
+  // Calculate latest 5 bookings
+  const latestBookings = [...bookings].sort((a, b) => b.id - a.id).slice(0, 5);
+
+  // Determine what to display
+  const displayBookings = (search || statusFilter !== "all" || viewMode === "all")
+    ? filtered
+    : latestBookings;
 
   const pendingCount = bookings.filter(b => b.status === "pending").length;
   const confirmedCount = bookings.filter(b => b.status === "confirmed").length;
@@ -136,42 +150,53 @@ export default function Bookings() {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
   return (
-    <div className="p-6">
+    <div>
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">🎫 Bookings Management</h2>
-        <p className="text-gray-600">Manage all customer bookings and reservations</p>
+        <h2 className="text-3xl font-bold text-[#1C7DA2] mb-2">Bookings Management</h2>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">Total Bookings</p>
-          <p className="text-3xl font-bold">{bookings.length}</p>
+        <div
+          onClick={() => { setStatusFilter("all"); setViewMode("all"); }}
+          className={`bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${statusFilter === "all" && viewMode === "all" ? "ring-4 ring-blue-300" : ""}`}
+        >
+          <p className="text-white/90 text-base font-semibold mb-1">Total Bookings</p>
+          <p className="text-2xl font-extrabold">{bookings.length}</p>
         </div>
-        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">⏳ Pending</p>
-          <p className="text-3xl font-bold">{pendingCount}</p>
+        <div
+          onClick={() => { setStatusFilter("pending"); setViewMode("all"); }}
+          className={`bg-gradient-to-br from-yellow-500 to-yellow-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${statusFilter === "pending" ? "ring-4 ring-yellow-300" : ""}`}
+        >
+          <p className="text-white/90 text-base font-semibold mb-1">⏳ Pending</p>
+          <p className="text-2xl font-extrabold">{pendingCount}</p>
         </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">✅ Confirmed</p>
-          <p className="text-3xl font-bold">{confirmedCount}</p>
+        <div
+          onClick={() => { setStatusFilter("confirmed"); setViewMode("all"); }}
+          className={`bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${statusFilter === "confirmed" ? "ring-4 ring-green-300" : ""}`}
+        >
+          <p className="text-white/90 text-base font-semibold mb-1">✅ Confirmed</p>
+          <p className="text-2xl font-extrabold">{confirmedCount}</p>
         </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">💳 Paid</p>
-          <p className="text-3xl font-bold">{paidCount}</p>
+        <div
+          onClick={() => { setStatusFilter("paid"); setViewMode("all"); }}
+          className={`bg-gradient-to-br from-purple-500 to-purple-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${statusFilter === "paid" ? "ring-4 ring-purple-300" : ""}`}
+        >
+          <p className="text-white/90 text-base font-semibold mb-1">💳 Paid</p>
+          <p className="text-2xl font-extrabold">{paidCount}</p>
         </div>
         <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-5 rounded-xl shadow-lg text-white">
-          <p className="text-white/80 text-sm mb-1">💰 Revenue</p>
-          <p className="text-2xl font-bold">৳{totalRevenue.toLocaleString()}</p>
+          <p className="text-white/90 text-base font-semibold mb-1">💰 Revenue</p>
+          <p className="text-xl font-extrabold">৳{totalRevenue.toLocaleString()}</p>
         </div>
       </div>
 
@@ -183,7 +208,7 @@ export default function Bookings() {
             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="🔍 Search by name, email, phone, or package..."
+              placeholder="Search by name, email, phone, or package..."
               className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -220,6 +245,13 @@ export default function Bookings() {
       {/* Bookings Table */}
       {!loading || bookings.length > 0 ? (
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="px-6 py-4 bg-gray-50 border-b">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {search || statusFilter !== "all" || viewMode === "all"
+                ? "Filtered Bookings"
+                : "Latest 5 Bookings"}
+            </h3>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
@@ -236,7 +268,7 @@ export default function Bookings() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filtered.map((booking) => (
+                {displayBookings.map((booking) => (
                   <tr key={booking.id} className="hover:bg-blue-50 transition">
                     <td className="px-6 py-4 text-sm font-semibold text-gray-800">
                       #{booking.id}
@@ -260,99 +292,42 @@ export default function Bookings() {
                       {formatDate(booking.travel_date)}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      <div className="flex items-center gap-1">
-                        <FaUsers className="text-blue-500" />
-                        <span className="font-semibold">{booking.persons}</span>
-                      </div>
+                      <span className="font-semibold">{booking.persons}</span>
                     </td>
                     <td className="px-6 py-4 text-sm font-bold text-blue-600">
                       ৳{booking.total_price ? Number(booking.total_price).toLocaleString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
                         booking.payment_status === 'partially_paid' ? 'bg-blue-100 text-blue-700' :
-                        booking.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
-                        {booking.payment_status === 'paid' || booking.payment_status === 'completed' ? '✅ Paid' : 
-                         booking.payment_status === 'partially_paid' ? '💰 Partially Paid' :
-                         booking.payment_status === 'pending' ? '⏳ Pending' : 
-                         '❌ Failed'}
+                          booking.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-red-100 text-red-700'
+                        }`}>
+                        {booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'Paid' :
+                          booking.payment_status === 'partially_paid' ? 'Partially Paid' :
+                            booking.payment_status === 'pending' ? 'Pending' :
+                              'Failed'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(booking.status)}`}>
-                        {booking.status === 'pending' ? '⏳' : booking.status === 'confirmed' ? '✅' : '❌'} {capitalize(booking.status)}
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusColor(booking.status)}`}>
+                        {capitalize(booking.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex gap-2 justify-center">
+                      <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleView(booking)}
-                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
-                          title="View Details"
+                          className="bg-green-600 hover:bg-green-700 text-white w-16 py-1.5 rounded-md text-xs font-semibold transition shadow-sm"
                         >
-                          <FaEye size={16} />
+                          View
                         </button>
-                        
-                        {booking.status === "pending" && (
-                          <>
-                            <button
-                              onClick={() => handleStatusChange(booking.id, "confirmed")}
-                              disabled={updateLoading === booking.id}
-                              className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition disabled:opacity-50"
-                              title="Confirm Booking"
-                            >
-                              {updateLoading === booking.id ? (
-                                <FaSpinner className="animate-spin" size={16} />
-                              ) : (
-                                <FaCheck size={16} />
-                              )}
-                            </button>
-                            <button
-                              onClick={() => handleStatusChange(booking.id, "cancelled")}
-                              disabled={updateLoading === booking.id}
-                              className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition disabled:opacity-50"
-                              title="Cancel Booking"
-                            >
-                              <FaTimes size={16} />
-                            </button>
-                          </>
-                        )}
-
-                        {booking.status !== "pending" && (
-                          <button
-                            onClick={() => handleStatusChange(booking.id, "pending")}
-                            disabled={updateLoading === booking.id}
-                            className="p-2 text-yellow-600 hover:bg-yellow-100 rounded-lg transition disabled:opacity-50"
-                            title="Set as Pending"
-                          >
-                            <FaClock size={16} />
-                          </button>
-                        )}
-
-                        {booking.payment_status === 'partially_paid' && (
-                          <button
-                            onClick={() => handleMarkAsPaid(booking.id)}
-                            className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition"
-                            title="Mark as Fully Paid"
-                          >
-                            <FaMoneyBillWave size={16} />
-                          </button>
-                        )}
-
                         <button
                           onClick={() => handleDelete(booking.id)}
                           disabled={deleteLoading === booking.id}
-                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition disabled:opacity-50"
-                          title="Delete Booking"
+                          className="bg-red-600 hover:bg-red-700 text-white w-16 py-1.5 rounded-md text-xs font-semibold transition shadow-sm disabled:opacity-50"
                         >
-                          {deleteLoading === booking.id ? (
-                            <FaSpinner className="animate-spin" size={16} />
-                          ) : (
-                            <FaTrash size={16} />
-                          )}
+                          {deleteLoading === booking.id ? "..." : "Delete"}
                         </button>
                       </div>
                     </td>
@@ -381,23 +356,22 @@ export default function Bookings() {
           <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {/* Header with Package Image */}
             <div className="relative">
-              <img 
-                src={viewData.package?.image || "https://via.placeholder.com/800x300"} 
+              <img
+                src={viewData.package?.image || "https://via.placeholder.com/800x300"}
                 alt={viewData.package?.title || "Booking"}
                 className="w-full h-48 object-cover rounded-t-2xl"
               />
-              <button 
-                onClick={() => setShowViewModal(false)} 
+              <button
+                onClick={() => setShowViewModal(false)}
                 className="absolute top-4 right-4 bg-white text-gray-700 hover:bg-red-500 hover:text-white p-3 rounded-full transition shadow-lg"
               >
                 <FaTimes size={20} />
               </button>
               <div className="absolute bottom-4 left-4">
-                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
-                  viewData.status === 'pending' ? 'bg-yellow-500 text-white' :
+                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${viewData.status === 'pending' ? 'bg-yellow-500 text-white' :
                   viewData.status === 'confirmed' ? 'bg-green-500 text-white' :
-                  'bg-red-500 text-white'
-                }`}>
+                    'bg-red-500 text-white'
+                  }`}>
                   {viewData.status === 'pending' ? '⏳' : viewData.status === 'confirmed' ? '✅' : '❌'} {capitalize(viewData.status)}
                 </span>
               </div>
@@ -499,25 +473,24 @@ export default function Bookings() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Payment Status</p>
-                      <span className={`px-4 py-2 rounded-full text-sm font-bold ${
-                        viewData.payment_status === 'paid' || viewData.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-4 py-2 rounded-full text-sm font-bold ${viewData.payment_status === 'paid' || viewData.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
                         viewData.payment_status === 'partially_paid' ? 'bg-blue-100 text-blue-700' :
-                        viewData.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
-                        {viewData.payment_status === 'paid' || viewData.payment_status === 'completed' ? '✅ Paid' : 
-                         viewData.payment_status === 'partially_paid' ? '💰 Partially Paid' :
-                         viewData.payment_status === 'pending' ? '⏳ Pending' : 
-                         '❌ Failed'}
+                          viewData.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-red-100 text-red-700'
+                        }`}>
+                        {viewData.payment_status === 'paid' || viewData.payment_status === 'completed' ? '✅ Paid' :
+                          viewData.payment_status === 'partially_paid' ? '💰 Partially Paid' :
+                            viewData.payment_status === 'pending' ? '⏳ Pending' :
+                              '❌ Failed'}
                       </span>
                       {viewData.payment_status === 'partially_paid' && (
                         <div className="mt-3 space-y-1">
                           <p className="text-sm">
-                            <span className="text-gray-600">Paid:</span> 
+                            <span className="text-gray-600">Paid:</span>
                             <span className="text-green-600 font-bold ml-2">৳{viewData.paid_amount ? Number(viewData.paid_amount).toLocaleString() : '0'}</span>
                           </p>
                           <p className="text-sm">
-                            <span className="text-gray-600">Due:</span> 
+                            <span className="text-gray-600">Due:</span>
                             <span className="text-orange-600 font-bold ml-2">৳{((viewData.total_price || 0) - (viewData.paid_amount || 0)).toLocaleString()}</span>
                           </p>
                         </div>
@@ -552,43 +525,43 @@ export default function Bookings() {
               )}
 
               {/* Action Buttons */}
-              <div className="flex gap-3 justify-end">
+              <div className="flex flex-wrap gap-3 justify-end pt-6 border-t font-semibold">
                 {viewData.payment_status === 'partially_paid' && (
-                  <button 
+                  <button
                     onClick={() => {
                       handleMarkAsPaid(viewData.id);
                       setShowViewModal(false);
-                    }} 
-                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition font-semibold flex items-center gap-2"
+                    }}
+                    className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition shadow-md flex items-center gap-2"
                   >
                     <FaMoneyBillWave /> Mark as Fully Paid
                   </button>
                 )}
                 {viewData.status === "pending" && (
-                  <>
-                    <button 
-                      onClick={() => {
-                        handleStatusChange(viewData.id, "confirmed");
-                        setShowViewModal(false);
-                      }} 
-                      className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
-                    >
-                      ✅ Confirm Booking
-                    </button>
-                    <button 
-                      onClick={() => {
-                        handleStatusChange(viewData.id, "cancelled");
-                        setShowViewModal(false);
-                      }} 
-                      className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
-                    >
-                      ❌ Cancel Booking
-                    </button>
-                  </>
+                  <button
+                    onClick={() => {
+                      handleStatusChange(viewData.id, "confirmed");
+                      setShowViewModal(false);
+                    }}
+                    className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-md"
+                  >
+                    Confirm Booking
+                  </button>
                 )}
-                <button 
-                  onClick={() => setShowViewModal(false)} 
-                  className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold"
+                {viewData.status !== "cancelled" && (
+                  <button
+                    onClick={() => {
+                      handleStatusChange(viewData.id, "cancelled");
+                      setShowViewModal(false);
+                    }}
+                    className="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition shadow-md"
+                  >
+                    Cancel Booking
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowViewModal(false)}
+                  className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition shadow-sm"
                 >
                   Close
                 </button>

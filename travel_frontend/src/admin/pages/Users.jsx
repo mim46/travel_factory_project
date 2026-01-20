@@ -5,7 +5,7 @@ import { FaEye, FaTrash, FaSearch, FaPlus, FaEdit, FaTimes } from "react-icons/f
 
 export default function Users() {
   const dispatch = useDispatch();
-const { users, loading, error } = useSelector((state) => state.user);  
+  const { users, loading, error } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -13,7 +13,7 @@ const { users, loading, error } = useSelector((state) => state.user);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [viewMode, setViewMode] = useState("latest"); // "all", "latest", or "recent-bookings"
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -68,6 +68,10 @@ const { users, loading, error } = useSelector((state) => state.user);
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
+    if (formData.password.length < 8) {
+      alert("Password must be at least 8 characters.");
+      return;
+    }
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8000/api/admin/users', {
@@ -132,7 +136,7 @@ const { users, loading, error } = useSelector((state) => state.user);
   };
 
   // Filter users and sort by newest first
-  const filteredUsers = users?.filter((user) => 
+  const filteredUsers = users?.filter((user) =>
     user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.phone?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -142,19 +146,20 @@ const { users, loading, error } = useSelector((state) => state.user);
   const totalBookings = users?.reduce((sum, user) => sum + (user.bookings_count || 0), 0) || 0;
 
   // Get latest 5 users
-  const latestUsers = users?.slice(0, 5) || [];
+  const latestUsers = [...(users || [])].sort((a, b) => b.id - a.id).slice(0, 5);
 
-  // Get users with bookings (latest 5)
+  // Get users with bookings (ALL)
   const usersWithBookings = users?.filter(user => user.bookings_count > 0)
-    .sort((a, b) => b.id - a.id)
-    .slice(0, 5) || [];
+    .sort((a, b) => b.id - a.id) || [];
 
   // Determine what to display
-  const displayUsers = viewMode === "recent-bookings" 
-    ? usersWithBookings 
-    : viewMode === "latest" 
-    ? latestUsers 
-    : filteredUsers;
+  const displayUsers = searchTerm
+    ? filteredUsers
+    : viewMode === "recent-bookings"
+      ? usersWithBookings
+      : viewMode === "latest"
+        ? latestUsers
+        : filteredUsers;
 
   return (
     <div>
@@ -172,16 +177,15 @@ const { users, loading, error } = useSelector((state) => state.user);
       {/* Stats Cards - Compact Dashboard Style */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Total Users */}
-        <div 
+        <div
           onClick={() => setViewMode("all")}
-          className={`bg-gradient-to-r from-blue-500 to-blue-600 p-5 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
-            viewMode === "all" ? "ring-4 ring-blue-300" : ""
-          }`}
+          className={`bg-gradient-to-r from-blue-500 to-blue-600 p-5 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${viewMode === "all" ? "ring-4 ring-blue-500" : ""
+            }`}
         >
           <div className="flex items-center justify-between text-white">
             <div>
-              <p className="text-blue-100 text-xs font-medium mb-1">Total Users</p>
-              <p className="text-3xl font-bold">{users?.length || 0}</p>
+              <p className="text-blue-100 text-base font-semibold mb-1">Total Users</p>
+              <p className="text-2xl font-extrabold">{users?.length || 0}</p>
             </div>
             <div className="bg-white bg-opacity-20 p-3 rounded-lg">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -192,16 +196,15 @@ const { users, loading, error } = useSelector((state) => state.user);
         </div>
 
         {/* Total Bookings */}
-        <div 
+        <div
           onClick={() => setViewMode("recent-bookings")}
-          className={`bg-gradient-to-r from-purple-500 to-purple-600 p-5 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
-            viewMode === "recent-bookings" ? "ring-4 ring-purple-300" : ""
-          }`}
+          className={`bg-gradient-to-r from-purple-500 to-purple-600 p-5 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${viewMode === "recent-bookings" ? "ring-4 ring-blue-500" : ""
+            }`}
         >
           <div className="flex items-center justify-between text-white">
             <div>
-              <p className="text-purple-100 text-xs font-medium mb-1">Total Bookings</p>
-              <p className="text-3xl font-bold">{totalBookings}</p>
+              <p className="text-purple-100 text-base font-semibold mb-1">Total Bookings</p>
+              <p className="text-2xl font-extrabold">{totalBookings}</p>
             </div>
             <div className="bg-white bg-opacity-20 p-3 rounded-lg">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -212,17 +215,16 @@ const { users, loading, error } = useSelector((state) => state.user);
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-          <p className="text-gray-600 text-xs font-medium mb-2">Search Users</p>
-          <div className="relative">
+        {/* Search Bar - Last */}
+        <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 flex flex-col justify-center">
+          <div className="relative w-full">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
             <input
               type="text"
               placeholder="Name, email, phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              className="w-full pl-9 pr-3 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
             />
           </div>
         </div>
@@ -232,15 +234,13 @@ const { users, loading, error } = useSelector((state) => state.user);
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="px-6 py-4 bg-gray-50 border-b">
           <h3 className="text-lg font-semibold text-gray-800">
-            {viewMode === "recent-bookings" 
-              ? "Latest 5 Users with Bookings" 
-              : viewMode === "latest" 
-              ? "Latest 5 Users" 
-              : "All Users"}
+            {viewMode === "recent-bookings"
+              ? "All Users with Bookings"
+              : viewMode === "latest"
+                ? "Latest 5 Users"
+                : "All Users"}
           </h3>
-          <p className="text-sm text-gray-600 mt-0.5">
-            {displayUsers?.length || 0} user{displayUsers?.length !== 1 ? 's' : ''} found
-          </p>
+
         </div>
 
         {loading ? (
@@ -255,11 +255,11 @@ const { users, loading, error } = useSelector((state) => state.user);
         ) : displayUsers?.length === 0 ? (
           <div className="p-12 text-center">
             <p className="text-gray-600">
-              {viewMode === "recent-bookings" 
-                ? "No users with bookings found" 
-                : viewMode === "latest" 
-                ? "No users found" 
-                : "No users found"}
+              {viewMode === "recent-bookings"
+                ? "No users with bookings found"
+                : viewMode === "latest"
+                  ? "No users found"
+                  : "No users found"}
             </p>
           </div>
         ) : (
@@ -299,25 +299,16 @@ const { users, loading, error } = useSelector((state) => state.user);
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() => handleViewDetails(user)}
-                          className="text-blue-600 hover:bg-blue-100 p-2 rounded-lg transition"
-                          title="View Details"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
                           onClick={() => handleEditUser(user)}
-                          className="text-green-600 hover:bg-green-100 p-2 rounded-lg transition"
-                          title="Edit User"
+                          className="bg-green-600 hover:bg-green-700 text-white w-16 py-1.5 rounded-md text-xs font-semibold transition shadow-sm"
                         >
-                          <FaEdit />
+                          Edit
                         </button>
                         <button
                           onClick={() => handleDelete(user.id)}
-                          className="text-red-600 hover:bg-red-100 p-2 rounded-lg transition"
-                          title="Delete"
+                          className="bg-red-600 hover:bg-red-700 text-white w-16 py-1.5 rounded-md text-xs font-semibold transition shadow-sm"
                         >
-                          <FaTrash />
+                          Delete
                         </button>
                       </div>
                     </td>
@@ -476,7 +467,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
                     placeholder="Enter full name"
                   />
                 </div>
@@ -489,7 +480,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
                     placeholder="Enter email"
                   />
                 </div>
@@ -504,8 +495,9 @@ const { users, loading, error } = useSelector((state) => state.user);
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                    placeholder="Enter password (min 6 characters)"
+                    minLength={8}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
+                    placeholder="Enter password (min 8 characters)"
                   />
                 </div>
 
@@ -516,7 +508,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
                     placeholder="Enter phone number"
                   />
                 </div>
@@ -527,7 +519,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                     name="gender"
                     value={formData.gender}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
                   >
                     <option value="">Select Gender</option>
                     <option value="male">Male</option>
@@ -542,7 +534,10 @@ const { users, loading, error } = useSelector((state) => state.user);
                     name="dob"
                     value={formData.dob}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
+                    min="1900-01-01"
+                    title="You must be at least 18 years old"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
                   />
                 </div>
 
@@ -553,7 +548,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                     value={formData.address}
                     onChange={handleInputChange}
                     rows="3"
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
                     placeholder="Enter address"
                   ></textarea>
                 </div>
@@ -621,7 +616,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition bg-white"
                       placeholder="Enter full name"
                     />
                   </div>
@@ -634,7 +629,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition bg-white"
                       placeholder="Enter email"
                     />
                   </div>
@@ -646,7 +641,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition bg-white"
                       placeholder="Enter phone number"
                     />
                   </div>
@@ -657,7 +652,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                       name="gender"
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition bg-white"
                     >
                       <option value="">Select Gender</option>
                       <option value="male">Male</option>
@@ -672,7 +667,10 @@ const { users, loading, error } = useSelector((state) => state.user);
                       name="dob"
                       value={formData.dob}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                      max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
+                      min="1900-01-01"
+                      title="You must be at least 18 years old"
+                      className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition bg-white"
                     />
                   </div>
                 </div>
@@ -693,7 +691,7 @@ const { users, loading, error } = useSelector((state) => state.user);
                   value={formData.address}
                   onChange={handleInputChange}
                   rows="3"
-                  className="w-full px-4 py-2.5 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition bg-white"
+                  className="w-full px-4 py-2.5 border border-orange-300 rounded-lg focus:outline-none focus:ring-orange-500 focus:border-orange-500 transition bg-white"
                   placeholder="Enter complete address"
                 ></textarea>
               </div>

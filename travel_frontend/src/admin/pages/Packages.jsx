@@ -30,7 +30,7 @@ export default function Packages() {
 
   const handleDelete = async (id) => {
     if (!confirm("⚠️ Are you sure you want to delete this package? This action cannot be undone.")) return;
-    
+
     setDeleteLoading(id);
     try {
       await dispatch(deletePkg(id)).unwrap();
@@ -52,7 +52,7 @@ export default function Packages() {
         await dispatch(createPkg(form)).unwrap();
         alert("✅ Package created successfully!");
       }
-      
+
       dispatch(fetchPackages());
       setShowModal(false);
       setEditData(null);
@@ -70,8 +70,8 @@ export default function Packages() {
 
   const filtered = packages.filter((p) => {
     const matchesSearch = p.title?.toLowerCase().includes(search.toLowerCase()) ||
-                         p.country?.toLowerCase().includes(search.toLowerCase()) ||
-                         p.city?.toLowerCase().includes(search.toLowerCase());
+      p.country?.toLowerCase().includes(search.toLowerCase()) ||
+      p.city?.toLowerCase().includes(search.toLowerCase());
     const matchesType = filterType === "all" || p.package_type === filterType;
     return matchesSearch && matchesType;
   });
@@ -89,15 +89,15 @@ export default function Packages() {
   const budgetPackages = packages.filter(p => p.package_type === "budget").slice(0, 5);
 
   // Determine what to display
-  const displayPackages = viewMode === "all" 
-    ? filtered 
+  const displayPackages = viewMode === "all"
+    ? filtered
     : viewMode === "domestic"
-    ? domesticPackages
-    : viewMode === "international"
-    ? internationalPackages
-    : viewMode === "budget"
-    ? budgetPackages
-    : latestPackages;
+      ? domesticPackages
+      : viewMode === "international"
+        ? internationalPackages
+        : viewMode === "budget"
+          ? budgetPackages
+          : latestPackages;
 
   const capitalize = (str) => {
     if (!str) return '';
@@ -111,12 +111,11 @@ export default function Packages() {
   };
 
   return (
-    <div className="p-6">
+    <div>
       {/* Header with Add Button */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">📦 Package Management</h2>
-          <p className="text-gray-600">Manage all travel packages for your customers</p>
+          <h2 className="text-3xl font-bold text-[#1C7DA2] mb-2">Package Management</h2>
         </div>
         <button
           onClick={() => { setEditData(null); setShowModal(true); }}
@@ -128,41 +127,37 @@ export default function Packages() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div 
+        <div
           onClick={() => setViewMode("all")}
-          className={`bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
-            viewMode === "all" ? "ring-4 ring-blue-300" : ""
-          }`}
+          className={`bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${viewMode === "all" ? "ring-4 ring-blue-300" : ""
+            }`}
         >
-          <p className="text-white/80 text-sm mb-1">Total Packages</p>
-          <p className="text-3xl font-bold">{packages.length}</p>
+          <p className="text-white/90 text-base font-semibold mb-1">Total Packages</p>
+          <p className="text-2xl font-extrabold">{packages.length}</p>
         </div>
-        <div 
+        <div
           onClick={() => setViewMode("domestic")}
-          className={`bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
-            viewMode === "domestic" ? "ring-4 ring-green-300" : ""
-          }`}
+          className={`bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${viewMode === "domestic" ? "ring-4 ring-green-300" : ""
+            }`}
         >
-          <p className="text-white/80 text-sm mb-1">🏠 Domestic</p>
-          <p className="text-3xl font-bold">{domesticCount}</p>
+          <p className="text-white/90 text-base font-semibold mb-1">🏠 Domestic</p>
+          <p className="text-2xl font-extrabold">{domesticCount}</p>
         </div>
-        <div 
+        <div
           onClick={() => setViewMode("international")}
-          className={`bg-gradient-to-br from-purple-500 to-purple-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
-            viewMode === "international" ? "ring-4 ring-purple-300" : ""
-          }`}
+          className={`bg-gradient-to-br from-purple-500 to-purple-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${viewMode === "international" ? "ring-4 ring-purple-300" : ""
+            }`}
         >
-          <p className="text-white/80 text-sm mb-1">✈️ International</p>
-          <p className="text-3xl font-bold">{internationalCount}</p>
+          <p className="text-white/90 text-base font-semibold mb-1">✈️ International</p>
+          <p className="text-2xl font-extrabold">{internationalCount}</p>
         </div>
-        <div 
+        <div
           onClick={() => setViewMode("budget")}
-          className={`bg-gradient-to-br from-orange-500 to-orange-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${
-            viewMode === "budget" ? "ring-4 ring-orange-300" : ""
-          }`}
+          className={`bg-gradient-to-br from-orange-500 to-orange-600 p-5 rounded-xl shadow-lg text-white cursor-pointer hover:shadow-xl transition transform hover:scale-105 ${viewMode === "budget" ? "ring-4 ring-orange-300" : ""
+            }`}
         >
-          <p className="text-white/80 text-sm mb-1">💰 Budget</p>
-          <p className="text-3xl font-bold">{budgetCount}</p>
+          <p className="text-white/90 text-base font-semibold mb-1">💰 Budget</p>
+          <p className="text-2xl font-extrabold">{budgetCount}</p>
         </div>
       </div>
 
@@ -174,7 +169,7 @@ export default function Packages() {
             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="🔍 Search by title, country, or city..."
+              placeholder="Search by title, country, or city..."
               className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -213,15 +208,15 @@ export default function Packages() {
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="px-6 py-4 bg-gray-50 border-b">
             <h3 className="text-lg font-semibold text-gray-800">
-              {viewMode === "all" 
-                ? "All Packages" 
+              {viewMode === "all"
+                ? "All Packages"
                 : viewMode === "domestic"
-                ? "Latest 5 Domestic Packages"
-                : viewMode === "international"
-                ? "Latest 5 International Packages"
-                : viewMode === "budget"
-                ? "Latest 5 Budget Packages"
-                : "Latest 5 Packages"}
+                  ? "Latest 5 Domestic Packages"
+                  : viewMode === "international"
+                    ? "Latest 5 International Packages"
+                    : viewMode === "budget"
+                      ? "Latest 5 Budget Packages"
+                      : "Latest 5 Packages"}
             </h3>
             <p className="text-sm text-gray-600 mt-0.5">
               {displayPackages?.length || 0} package{displayPackages?.length !== 1 ? 's' : ''} found
@@ -244,9 +239,9 @@ export default function Packages() {
                   <tr key={p.id} className="hover:bg-blue-50 transition">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <img 
-                          src={p.image ? `http://localhost:8000/${p.image}` : "https://via.placeholder.com/60"} 
-                          alt={p.title} 
+                        <img
+                          src={p.image ? `http://localhost:8000/${p.image}` : "https://via.placeholder.com/60"}
+                          alt={p.title}
                           className="w-16 h-16 rounded-lg object-cover shadow"
                         />
                         <div>
@@ -258,11 +253,10 @@ export default function Packages() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        p.package_type === 'domestic' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.package_type === 'domestic' ? 'bg-green-100 text-green-700' :
                         p.package_type === 'international' ? 'bg-purple-100 text-purple-700' :
-                        'bg-orange-100 text-orange-700'
-                      }`}>
+                          'bg-orange-100 text-orange-700'
+                        }`}>
                         {p.package_type === 'domestic' ? '🏠 ' : p.package_type === 'international' ? '✈️ ' : '💰 '}
                         {capitalize(p.package_type || 'budget')}
                       </span>
@@ -276,35 +270,22 @@ export default function Packages() {
                       ৳{Number(p.price).toLocaleString()}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleView(p)}
-                          className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition"
-                          title="View Package"
-                        >
-                          <FaEye size={16} />
-                        </button>
+                      <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => {
                             setEditData(p);
                             setShowModal(true);
                           }}
-                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
-                          title="Edit Package"
+                          className="bg-green-600 hover:bg-green-700 text-white w-16 py-1.5 rounded-md text-xs font-semibold transition shadow-sm"
                         >
-                          <FaEdit size={16} />
+                          Edit
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
                           disabled={deleteLoading === p.id}
-                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition disabled:opacity-50"
-                          title="Delete Package"
+                          className="bg-red-600 hover:bg-red-700 text-white w-16 py-1.5 rounded-md text-xs font-semibold transition shadow-sm disabled:opacity-50"
                         >
-                          {deleteLoading === p.id ? (
-                            <FaSpinner className="animate-spin" size={16} />
-                          ) : (
-                            <FaTrash size={16} />
-                          )}
+                          {deleteLoading === p.id ? "..." : "Delete"}
                         </button>
                       </div>
                     </td>
@@ -343,23 +324,22 @@ export default function Packages() {
         <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4" onClick={() => setShowViewModal(false)}>
           <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="relative">
-              <img 
-                src={viewData.image ? `http://localhost:8000/${viewData.image}` : "https://via.placeholder.com/800x400"} 
+              <img
+                src={viewData.image ? `http://localhost:8000/${viewData.image}` : "https://via.placeholder.com/800x400"}
                 alt={viewData.title}
                 className="w-full h-64 object-cover rounded-t-2xl"
               />
-              <button 
-                onClick={() => setShowViewModal(false)} 
+              <button
+                onClick={() => setShowViewModal(false)}
                 className="absolute top-4 right-4 bg-white text-gray-700 hover:bg-red-500 hover:text-white p-3 rounded-full transition shadow-lg"
               >
                 <FaTimes size={20} />
               </button>
               <div className="absolute bottom-4 left-4">
-                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
-                  viewData.package_type === 'domestic' ? 'bg-green-500 text-white' :
+                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${viewData.package_type === 'domestic' ? 'bg-green-500 text-white' :
                   viewData.package_type === 'international' ? 'bg-purple-500 text-white' :
-                  'bg-orange-500 text-white'
-                }`}>
+                    'bg-orange-500 text-white'
+                  }`}>
                   {viewData.package_type === 'domestic' ? '🏠 ' : viewData.package_type === 'international' ? '✈️ ' : '💰 '}
                   {capitalize(viewData.package_type)}
                 </span>
@@ -454,8 +434,8 @@ export default function Packages() {
               )}
 
               <div className="flex justify-end mt-8">
-                <button 
-                  onClick={() => setShowViewModal(false)} 
+                <button
+                  onClick={() => setShowViewModal(false)}
                   className="px-8 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition font-semibold shadow-lg"
                 >
                   Close

@@ -35,16 +35,16 @@ export default function SalesReport() {
 
       if (response.ok) {
         const allBookings = await response.json();
-        
+
         // Filter bookings by date range
         const filtered = allBookings.filter(booking => {
           const bookingDate = new Date(booking.created_at);
           const from = new Date(fromDate);
           const to = new Date(toDate);
           to.setHours(23, 59, 59, 999);
-          
-          return bookingDate >= from && bookingDate <= to && 
-                 (booking.status === 'confirmed' || booking.status === 'pending');
+
+          return bookingDate >= from && bookingDate <= to &&
+            (booking.status === 'confirmed' || booking.status === 'pending');
         });
 
         setBookings(filtered);
@@ -52,7 +52,7 @@ export default function SalesReport() {
         // Calculate summary
         const totalAmount = filtered.reduce((sum, b) => sum + parseFloat(b.total_price || 0), 0);
         const totalPersons = filtered.reduce((sum, b) => sum + parseInt(b.persons || 0), 0);
-        
+
         setSummary({
           totalBookings: filtered.length,
           totalAmount: totalAmount,
@@ -69,21 +69,21 @@ export default function SalesReport() {
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    
+
     // Title
     doc.setFontSize(18);
     doc.text('Sales Report', 14, 20);
-    
+
     // Date Range
     doc.setFontSize(11);
     doc.text(`From: ${new Date(fromDate).toLocaleDateString()} to ${new Date(toDate).toLocaleDateString()}`, 14, 30);
-    
+
     // Summary
     doc.setFontSize(10);
     doc.text(`Total Bookings: ${summary.totalBookings}`, 14, 40);
     doc.text(`Total Revenue: ৳${summary.totalAmount.toLocaleString()}`, 14, 46);
     doc.text(`Total Persons: ${summary.totalPersons}`, 14, 52);
-    
+
     // Table
     const tableData = bookings.map(booking => [
       `#${booking.user_id}`,
@@ -96,7 +96,7 @@ export default function SalesReport() {
       booking.status,
       booking.payment_status
     ]);
-    
+
     autoTable(doc, {
       startY: 60,
       head: [['User ID', 'Booking ID', 'Customer', 'Package', 'Date', 'Persons', 'Amount', 'Status', 'Payment']],
@@ -105,13 +105,13 @@ export default function SalesReport() {
       styles: { fontSize: 8 },
       headStyles: { fillColor: [79, 70, 229] }
     });
-    
+
     // Add total at the end
     const finalY = doc.lastAutoTable.finalY + 10;
     doc.setFontSize(12);
     doc.setFont(undefined, 'bold');
     doc.text(`TOTAL REVENUE: ৳${summary.totalAmount.toLocaleString()}`, 14, finalY);
-    
+
     // Save PDF
     doc.save(`sales-report-${fromDate}-to-${toDate}.pdf`);
   };
@@ -128,18 +128,18 @@ export default function SalesReport() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/admin/reports')}
-            className="p-2 hover:bg-gray-100 rounded-lg transition"
+            className="text-blue-600 hover:text-blue-800 font-semibold transition"
           >
-            <FaArrowLeft className="text-xl text-gray-600" />
+            ← Back
           </button>
           <div>
-            <h2 className="text-3xl font-bold text-gray-800">📊 Sales Report</h2>
+            <h2 className="text-3xl font-bold text-[#1C7DA2]">Sales Report</h2>
             <p className="text-gray-600 mt-1">
               <FaCalendarAlt className="inline mr-2" />
               From {new Date(fromDate).toLocaleDateString()} to {new Date(toDate).toLocaleDateString()}
@@ -150,7 +150,6 @@ export default function SalesReport() {
           onClick={generatePDF}
           className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition font-semibold shadow-lg"
         >
-          <FaFilePdf className="text-xl" />
           Download PDF
         </button>
       </div>
@@ -193,20 +192,18 @@ export default function SalesReport() {
                     <td className="p-3 text-center">{booking.persons}</td>
                     <td className="p-3 text-right font-bold text-green-600">৳{Number(booking.total_price).toLocaleString()}</td>
                     <td className="p-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
                         booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
+                          'bg-red-100 text-red-700'
+                        }`}>
                         {booking.status}
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.payment_status === 'paid' || booking.payment_status === 'completed' ? 'bg-green-100 text-green-700' :
                         booking.payment_status === 'partially_paid' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-700'
-                      }`}>
+                          'bg-gray-100 text-gray-700'
+                        }`}>
                         {booking.payment_status}
                       </span>
                     </td>

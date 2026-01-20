@@ -92,11 +92,11 @@ export default function Login() {
   };
 
   return (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-300 to-yellow-200 p-4">
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-blue-300 to-yellow-200 p-4 pt-36">
 
-    <img src={logo} alt="Logo" className="h-24 w-auto mb-4 drop-shadow-xl" />
+      <img src={logo} alt="Logo" className="h-20 w-auto mb-4 drop-shadow-xl" />
 
-    <div className="
+      <div className="
       w-full max-w-md p-8 rounded-2xl
       bg-white/40 backdrop-blur-md 
       shadow-xl border border-white/30 
@@ -178,14 +178,14 @@ export default function Login() {
       {showForgotModal && (
         <div className="fixed inset-0 bg-black/50 grid place-items-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-            
+
             {/* Step 1: Email Input */}
             {step === 'email' && (
               <>
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Forgot Password</h3>
                 {fpError && <p className="text-red-600 text-sm mb-3">{fpError}</p>}
                 {message && <p className="text-green-600 text-sm mb-3">{message}</p>}
-                
+
                 <form onSubmit={handleSendOtp} className="grid gap-4">
                   <input
                     type="email"
@@ -196,7 +196,7 @@ export default function Login() {
                     onChange={(e) => setModalEmail(e.target.value)}
                     required
                   />
-                  
+
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -224,7 +224,7 @@ export default function Login() {
               <>
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Verify OTP</h3>
                 {fpError && <p className="text-red-600 text-sm mb-3">{fpError}</p>}
-                
+
                 <form onSubmit={handleVerifyOtp} className="grid gap-4">
                   <input
                     type="text"
@@ -236,7 +236,7 @@ export default function Login() {
                     maxLength={6}
                     required
                   />
-                  
+
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -265,7 +265,7 @@ export default function Login() {
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Reset Password</h3>
                 {fpError && <p className="text-red-600 text-sm mb-3">{fpError}</p>}
                 {message && <p className="text-green-600 text-sm mb-3">{message}</p>}
-                
+
                 <form onSubmit={handleResetPassword} className="grid gap-4">
                   <input
                     type="password"
@@ -277,7 +277,7 @@ export default function Login() {
                     minLength={8}
                     required
                   />
-                  
+
                   <input
                     type="password"
                     placeholder="Confirm Password"
@@ -288,7 +288,7 @@ export default function Login() {
                     minLength={8}
                     required
                   />
-                  
+
                   <div className="flex gap-3">
                     <button
                       type="button"

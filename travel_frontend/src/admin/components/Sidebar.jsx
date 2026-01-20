@@ -8,7 +8,7 @@ export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const isActive = (path) => location.pathname === path;
 
   const handleSignOut = async () => {
@@ -18,17 +18,17 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="w-64 min-h-screen bg-[#E8F8FF] text-gray-800 p-6 space-y-6 border-r border-blue-100">
+    <div className="w-64 min-h-screen bg-[#E8F8FF] text-gray-800 p-6 space-y-3 border-r border-blue-100">
 
       {/* Logo - Clickable to landing page */}
-      <Link to="/" className="mb-10 flex justify-center cursor-pointer">
+      <Link to="/" className="mb-12 flex justify-center cursor-pointer">
         <img src={logo} alt="Travel Factory Logo" className="w-20 h-auto object-contain hover:opacity-80 transition" />
       </Link>
 
       {/* Dashboard */}
       <Link
         to="/admin"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaHome /> Dashboard
@@ -37,7 +37,7 @@ export default function Sidebar() {
       {/* Users */}
       <Link
         to="/admin/users"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/users") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaUsers /> Users
@@ -46,7 +46,7 @@ export default function Sidebar() {
       {/* Destinations */}
       <Link
         to="/admin/destinations"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/destinations") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaMapMarkerAlt /> Destinations
@@ -55,7 +55,7 @@ export default function Sidebar() {
       {/* Packages */}
       <Link
         to="/admin/packages"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/packages") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaBox /> Packages
@@ -64,7 +64,7 @@ export default function Sidebar() {
       {/* Bookings */}
       <Link
         to="/admin/bookings"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/bookings") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaShoppingCart /> Bookings
@@ -73,7 +73,7 @@ export default function Sidebar() {
       {/* Gallery */}
       <Link
         to="/admin/gallery"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/gallery") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaImages /> Gallery
@@ -82,7 +82,7 @@ export default function Sidebar() {
       {/* Reviews */}
       <Link
         to="/admin/reviews"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/reviews") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaStar /> Reviews
@@ -91,7 +91,7 @@ export default function Sidebar() {
       {/* Messages */}
       <Link
         to="/admin/messages"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/messages") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaEnvelope /> Messages
@@ -100,7 +100,7 @@ export default function Sidebar() {
       {/* Payments */}
       <Link
         to="/admin/payments"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/payments") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaMoneyBillWave /> Payments
@@ -109,7 +109,7 @@ export default function Sidebar() {
       {/* Reports */}
       <Link
         to="/admin/reports"
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition 
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition 
         ${isActive("/admin/reports") ? "bg-[#4DBEE3] text-white shadow" : "hover:bg-[#E3F7FF] text-[#1C7DA2]"}`}
       >
         <FaChartLine /> Reports
@@ -118,7 +118,7 @@ export default function Sidebar() {
       {/* Sign Out */}
       <button
         onClick={handleSignOut}
-        className="flex items-center gap-3 px-4 py-3 rounded-lg text-lg transition hover:bg-red-100 text-red-600 w-full"
+        className="flex items-center gap-3 px-4 py-2 rounded-lg text-lg transition hover:bg-red-100 text-red-600 w-full"
       >
         <FaSignOutAlt /> Sign Out
       </button>

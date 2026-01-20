@@ -84,16 +84,6 @@ export default function Contact() {
             <span>🌍</span>
           </div>
 
-          {/* Message Us Button (under "Get in Touch", right-aligned) */}
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={() => setShowMessageBox(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-lg"
-            >
-              <span className="text-xl">💬</span>
-              Message Us
-            </button>
-          </div>
         </div>
 
         {/* Google Map */}

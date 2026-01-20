@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { 
-  fetchAllMessages, 
-  fetchAllQueries, 
+import {
+  fetchAllMessages,
+  fetchAllQueries,
   replyToMessage,
   replyToQuery,
   deleteMessage,
-  deleteQuery 
+  deleteQuery
 } from "../../redux/slices/messageSlice";
-import { FaEnvelope, FaEnvelopeOpen, FaReply, FaEye, FaTrash, FaQuestionCircle } from "react-icons/fa";
+import { FaEnvelope, FaEnvelopeOpen, FaReply, FaEye, FaTrash, FaQuestionCircle, FaSearch } from "react-icons/fa";
 
 export default function Messages() {
   const dispatch = useDispatch();
   const { adminMessages, queries } = useSelector((state) => state.messages);
 
-  const [filter, setFilter] = useState("all"); // all, message, query, pending, replied
+  const [viewMode, setViewMode] = useState("all"); // all, message, query, pending, replied
   const [selectedItem, setSelectedItem] = useState(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [replyModalOpen, setReplyModalOpen] = useState(false);
@@ -33,21 +33,24 @@ export default function Messages() {
 
   // Filter items
   const filteredItems = allItems.filter((item) => {
-    if (filter === "message") return item.type === "message";
-    if (filter === "query") return item.type === "query";
-    if (filter === "pending") return item.type === "message" ? !item.is_replied : !item.is_read;
-    if (filter === "replied") return item.type === "message" ? item.is_replied : item.is_read;
-    return true;
+    return viewMode === "all" ||
+      (viewMode === "message" && item.type === "message") ||
+      (viewMode === "query" && item.type === "query") ||
+      (viewMode === "pending" && (item.type === "message" ? !item.is_replied : !item.is_read)) ||
+      (viewMode === "replied" && (item.type === "message" ? item.is_replied : item.is_read));
   });
+
+  // Determine what to display
+  const displayItems = filteredItems;
 
   // Stats
   const totalItems = allItems.length;
   const messageCount = adminMessages.length;
   const queryCount = queries.length;
-  const pendingCount = allItems.filter(item => 
+  const pendingCount = allItems.filter(item =>
     item.type === "message" ? !item.is_replied : !item.is_read
   ).length;
-  const repliedCount = allItems.filter(item => 
+  const repliedCount = allItems.filter(item =>
     item.type === "message" ? item.is_replied : item.is_read
   ).length;
 
@@ -76,7 +79,7 @@ export default function Messages() {
     } else {
       dispatch(replyToQuery({ id: selectedItem.id, admin_reply: replyText }));
     }
-    
+
     alert("✅ Reply sent successfully!");
     setReplyModalOpen(false);
     setReplyText("");
@@ -96,200 +99,183 @@ export default function Messages() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">💬 Messages & Queries</h1>
+      <h1 className="text-3xl font-bold text-[#1C7DA2] mb-6">Messages & Queries</h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-blue-100 to-blue-200 p-6 rounded-xl shadow">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+        <div
+          onClick={() => setViewMode("all")}
+          className={`bg-gradient-to-br from-blue-100 to-blue-200 p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition transform hover:scale-105 ${viewMode === "all" ? "ring-4 ring-blue-400" : ""}`}
+        >
           <div className="grid grid-cols-[1fr_auto] items-center gap-4">
             <div>
-              <p className="text-gray-600 text-sm">Total</p>
-              <p className="text-3xl font-bold text-blue-600">{totalItems}</p>
+              <p className="text-gray-700 text-base font-semibold mb-1">Total</p>
+              <p className="text-2xl font-extrabold text-blue-600">{totalItems}</p>
             </div>
             <FaEnvelope className="text-4xl text-blue-600" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-100 to-purple-200 p-6 rounded-xl shadow">
+        <div
+          onClick={() => setViewMode("message")}
+          className={`bg-gradient-to-br from-purple-100 to-purple-200 p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition transform hover:scale-105 ${viewMode === "message" ? "ring-4 ring-purple-400" : ""}`}
+        >
           <div className="grid grid-cols-[1fr_auto] items-center gap-4">
             <div>
-              <p className="text-gray-600 text-sm">Messages</p>
-              <p className="text-3xl font-bold text-purple-600">{messageCount}</p>
+              <p className="text-gray-700 text-base font-semibold mb-1">Messages</p>
+              <p className="text-2xl font-extrabold text-purple-600">{messageCount}</p>
             </div>
             <FaEnvelope className="text-4xl text-purple-600" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl shadow">
+        <div
+          onClick={() => setViewMode("query")}
+          className={`bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition transform hover:scale-105 ${viewMode === "query" ? "ring-4 ring-green-400" : ""}`}
+        >
           <div className="grid grid-cols-[1fr_auto] items-center gap-4">
             <div>
-              <p className="text-gray-600 text-sm">Queries</p>
-              <p className="text-3xl font-bold text-green-600">{queryCount}</p>
+              <p className="text-gray-700 text-base font-semibold mb-1">Queries</p>
+              <p className="text-2xl font-extrabold text-green-600">{queryCount}</p>
             </div>
             <FaQuestionCircle className="text-4xl text-green-600" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 p-6 rounded-xl shadow">
+        <div
+          onClick={() => setViewMode("pending")}
+          className={`bg-gradient-to-br from-yellow-100 to-yellow-200 p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition transform hover:scale-105 ${viewMode === "pending" ? "ring-4 ring-yellow-400" : ""}`}
+        >
           <div className="grid grid-cols-[1fr_auto] items-center gap-4">
             <div>
-              <p className="text-gray-600 text-sm">Pending</p>
-              <p className="text-3xl font-bold text-yellow-600">{pendingCount}</p>
+              <p className="text-gray-700 text-base font-semibold mb-1">Pending</p>
+              <p className="text-2xl font-extrabold text-yellow-600">{pendingCount}</p>
             </div>
             <FaEnvelopeOpen className="text-4xl text-yellow-600" />
           </div>
         </div>
-      </div>
 
-      {/* Filter Tabs */}
-      <div className="bg-white p-4 rounded-lg shadow mb-6">
-        <div className="grid grid-cols-5 gap-2">
-          <button
-            onClick={() => setFilter("all")}
-            className={`py-2 px-4 rounded-lg font-medium transition ${
-              filter === "all" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            All ({totalItems})
-          </button>
-          <button
-            onClick={() => setFilter("message")}
-            className={`py-2 px-4 rounded-lg font-medium transition ${
-              filter === "message" ? "bg-purple-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            Messages ({messageCount})
-          </button>
-          <button
-            onClick={() => setFilter("query")}
-            className={`py-2 px-4 rounded-lg font-medium transition ${
-              filter === "query" ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            Queries ({queryCount})
-          </button>
-          <button
-            onClick={() => setFilter("pending")}
-            className={`py-2 px-4 rounded-lg font-medium transition ${
-              filter === "pending" ? "bg-yellow-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            Pending ({pendingCount})
-          </button>
-          <button
-            onClick={() => setFilter("replied")}
-            className={`py-2 px-4 rounded-lg font-medium transition ${
-              filter === "replied" ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            Replied ({repliedCount})
-          </button>
+        <div
+          onClick={() => setViewMode("replied")}
+          className={`bg-gradient-to-br from-teal-100 to-teal-200 p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition transform hover:scale-105 ${viewMode === "replied" ? "ring-4 ring-teal-400" : ""}`}
+        >
+          <div className="grid grid-cols-[1fr_auto] items-center gap-4">
+            <div>
+              <p className="text-gray-700 text-base font-semibold mb-1">Replied</p>
+              <p className="text-2xl font-extrabold text-teal-600">{repliedCount}</p>
+            </div>
+            <FaEnvelope className="text-4xl text-teal-600" />
+          </div>
         </div>
       </div>
 
+
+
       {/* Items Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left p-4 font-semibold text-gray-700">Type</th>
-              <th className="text-left p-4 font-semibold text-gray-700">From</th>
-              <th className="text-left p-4 font-semibold text-gray-700">Subject/Message</th>
-              <th className="text-left p-4 font-semibold text-gray-700">Status</th>
-              <th className="text-left p-4 font-semibold text-gray-700">Date</th>
-              <th className="text-center p-4 font-semibold text-gray-700">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredItems.length === 0 ? (
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="px-6 py-4 bg-gray-50 border-b">
+          <h3 className="text-lg font-semibold text-gray-800">
+            {viewMode === "message" ? "All Messages" :
+              viewMode === "query" ? "All Queries" :
+                viewMode === "pending" ? "Pending Items" :
+                  viewMode === "replied" ? "Replied Items" : "All Messages & Queries"}
+          </h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
               <tr>
-                <td colSpan="6" className="text-center p-8 text-gray-500">
-                  No items found
-                </td>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">From</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Subject/Message</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
-            ) : (
-              filteredItems.map((item) => (
-                <tr key={`${item.type}-${item.id}`} className="border-t hover:bg-gray-50">
-                  <td className="p-4">
-                    {item.type === "query" ? (
-                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                        Query
-                      </span>
-                    ) : (
-                      <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">
-                        Message
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-4">
-                    <div>
-                      <p className="font-medium text-gray-800">
-                        {item.type === "query" ? item.name : item.user?.name || "Unknown"}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {item.type === "query" ? item.email : item.user?.email || "N/A"}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="p-4 text-gray-800">
-                    {item.type === "message" ? item.subject : item.message.substring(0, 50) + "..."}
-                  </td>
-                  <td className="p-4">
-                    {item.type === "message" ? (
-                      item.is_replied ? (
-                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                          Replied
-                        </span>
-                      ) : (
-                        <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">
-                          Pending
-                        </span>
-                      )
-                    ) : (
-                      item.is_read ? (
-                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                          Read
-                        </span>
-                      ) : (
-                        <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">
-                          Unread
-                        </span>
-                      )
-                    )}
-                  </td>
-                  <td className="p-4 text-gray-600 text-sm">
-                    {new Date(item.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="p-4">
-                    <div className="grid grid-cols-3 gap-2 place-items-center">
-                      <button
-                        onClick={() => handleView(item)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition"
-                        title="View"
-                      >
-                        <FaEye />
-                      </button>
-                      <button
-                        onClick={() => handleReply(item)}
-                        className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition"
-                        title="Reply"
-                      >
-                        <FaReply />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item)}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition"
-                        title="Delete"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {displayItems.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center p-8 text-gray-500 text-sm">
+                    No items found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                displayItems.map((item) => (
+                  <tr key={`${item.type}-${item.id}`} className="hover:bg-blue-50 transition">
+                    <td className="px-4 py-3">
+                      {item.type === "query" ? (
+                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                          Query
+                        </span>
+                      ) : (
+                        <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                          Message
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center">
+                        <div className={`h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold bg-gradient-to-br ${item.type === 'query' ? 'from-green-500 to-green-600' : 'from-purple-500 to-purple-600'}`}>
+                          {(item.type === "query" ? item.name : item.user?.name || "U").charAt(0).toUpperCase()}
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm font-medium text-gray-800">
+                            {item.type === "query" ? item.name : item.user?.name || "Unknown"}
+                          </p>
+                          <p className="text-[10px] text-gray-500">
+                            {item.type === "query" ? item.email : item.user?.email || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-800">
+                      {item.type === "message" ? (
+                        <span className="font-semibold">{item.subject}</span>
+                      ) : (
+                        <span className="italic text-gray-600">{item.message.substring(0, 40)}...</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {item.type === "message" ? (
+                        item.is_replied ? (
+                          <span className="text-green-600 text-xs font-bold">Replied</span>
+                        ) : (
+                          <span className="text-yellow-600 text-xs font-bold">Pending</span>
+                        )
+                      ) : (
+                        item.is_read ? (
+                          <span className="text-blue-600 text-xs font-bold">Read</span>
+                        ) : (
+                          <span className="text-orange-600 text-xs font-bold">Unread</span>
+                        )
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap">
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleReply(item)}
+                          className="bg-green-600 hover:bg-green-700 text-white w-16 py-1.5 rounded-md text-[10px] font-bold transition shadow-sm"
+                        >
+                          Reply
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item)}
+                          className="bg-red-600 hover:bg-red-700 text-white w-16 py-1.5 rounded-md text-[10px] font-bold transition shadow-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* View Modal */}

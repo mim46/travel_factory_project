@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMyBookings } from "../../redux/slices/bookingSlice";
 import { fetchMyReviews } from "../../redux/slices/reviewSlice";
 import ReviewModal from "../../components/ReviewModal";
-import { 
-  FaCalendar, 
-  FaUser, 
-  FaPhone, 
-  FaEnvelope, 
-  FaUsers, 
-  FaSearch, 
-  FaFilter, 
+import {
+  FaCalendar,
+  FaUser,
+  FaPhone,
+  FaEnvelope,
+  FaUsers,
+  FaSearch,
+  FaFilter,
   FaEye,
   FaMapMarkerAlt,
   FaMoneyBillWave,
@@ -48,18 +48,18 @@ export default function MyBookings() {
   const canReview = (booking) => {
     // Can review if: payment is paid/completed, tour has ended, and not already reviewed
     if (booking.payment_status !== 'paid' && booking.payment_status !== 'completed') return false;
-    
+
     const travelDate = new Date(booking.travel_date);
     const today = new Date();
-    
+
     // Extract duration days (e.g., "3 DAY" -> 3)
     const durationMatch = booking.package?.duration?.match(/(\d+)/);
     const durationDays = durationMatch ? parseInt(durationMatch[1]) : 0;
-    
+
     // Calculate tour end date
     const tourEndDate = new Date(travelDate);
     tourEndDate.setDate(tourEndDate.getDate() + durationDays);
-    
+
     // Tour must be completed
     if (tourEndDate > today) return false;
 
@@ -72,7 +72,7 @@ export default function MyBookings() {
   };
 
   const filtered = myBookings.filter((b) => {
-    const matchesSearch = 
+    const matchesSearch =
       b.package?.title?.toLowerCase().includes(search.toLowerCase()) ||
       b.travel_date?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "all" || b.status === statusFilter;
@@ -100,10 +100,10 @@ export default function MyBookings() {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
@@ -181,8 +181,8 @@ export default function MyBookings() {
           {filtered.map((booking) => (
             <div key={booking.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition">
               <div className="relative">
-                <img 
-                  src={booking.package?.image || "https://via.placeholder.com/400x200"} 
+                <img
+                  src={booking.package?.image ? `http://localhost:8000/${booking.package.image}` : "https://via.placeholder.com/400x200"}
                   alt={booking.package?.title}
                   className="w-full h-48 object-cover"
                 />
@@ -224,7 +224,7 @@ export default function MyBookings() {
                   >
                     <FaEye /> View Details
                   </button>
-                  
+
                   {canReview(booking) && (
                     <button
                       onClick={() => handleGiveReview(booking)}
@@ -233,7 +233,7 @@ export default function MyBookings() {
                       <FaStar /> Give Review
                     </button>
                   )}
-                  
+
                   {hasReview(booking) && (
                     <div className="flex items-center justify-center gap-2 text-green-600 text-sm font-semibold">
                       <FaStar /> Already Reviewed
@@ -251,23 +251,22 @@ export default function MyBookings() {
         <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4" onClick={() => setShowViewModal(false)}>
           <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="relative">
-              <img 
-                src={viewData.package?.image || "https://via.placeholder.com/800x300"} 
+              <img
+                src={viewData.package?.image ? `http://localhost:8000/${viewData.package.image}` : "https://via.placeholder.com/800x300"}
                 alt={viewData.package?.title || "Booking"}
                 className="w-full h-48 object-cover rounded-t-2xl"
               />
-              <button 
-                onClick={() => setShowViewModal(false)} 
+              <button
+                onClick={() => setShowViewModal(false)}
                 className="absolute top-4 right-4 bg-white text-gray-700 hover:bg-red-500 hover:text-white p-3 rounded-full transition shadow-lg"
               >
                 <FaTimes size={20} />
               </button>
               <div className="absolute bottom-4 left-4">
-                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg border-2 ${
-                  viewData.status === 'pending' ? 'bg-yellow-500 text-white border-yellow-300' :
-                  viewData.status === 'confirmed' ? 'bg-green-500 text-white border-green-300' :
-                  'bg-red-500 text-white border-red-300'
-                }`}>
+                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg border-2 ${viewData.status === 'pending' ? 'bg-yellow-500 text-white border-yellow-300' :
+                    viewData.status === 'confirmed' ? 'bg-green-500 text-white border-green-300' :
+                      'bg-red-500 text-white border-red-300'
+                  }`}>
                   {viewData.status === 'pending' ? '⏳' : viewData.status === 'confirmed' ? '✅' : '❌'} {capitalize(viewData.status)}
                 </span>
               </div>
@@ -360,8 +359,8 @@ export default function MyBookings() {
               )}
 
               <div className="flex justify-end">
-                <button 
-                  onClick={() => setShowViewModal(false)} 
+                <button
+                  onClick={() => setShowViewModal(false)}
                   className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold"
                 >
                   Close
@@ -373,7 +372,7 @@ export default function MyBookings() {
       )}
 
       {/* Review Modal */}
-      <ReviewModal 
+      <ReviewModal
         isOpen={showReviewModal}
         onClose={() => {
           setShowReviewModal(false);

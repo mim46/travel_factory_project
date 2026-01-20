@@ -19,6 +19,7 @@ export default function Signup() {
     address: "",
     password: "",
     confirmPassword: "",
+    termsAccepted: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -49,6 +50,11 @@ export default function Signup() {
     if (form.password !== form.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match.";
 
+    // Validate Terms
+    if (!form.termsAccepted) {
+      newErrors.terms = "You must agree to the Terms & Conditions.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -76,7 +82,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-300 to-yellow-200 p-4">
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-blue-300 to-yellow-200 p-4 pt-36">
 
       {/* Logo */}
       <img src={logo} alt="Travel Factory Logo" className="h-20 mb-4 drop-shadow-xl" />
@@ -147,15 +153,16 @@ export default function Signup() {
 
           {/* DOB */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date of Birth
-            </label>
+
             <input
               type="date"
               name="dob"
               value={form.dob}
               onChange={handleChange}
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
+              min="1900-01-01"
               className="p-2.5 rounded-lg w-full border border-blue-400 text-sm"
+              title="You must be at least 18 years old"
             />
             {errors.dob && <p className="text-red-600 text-xs">{errors.dob}</p>}
           </div>
@@ -217,10 +224,24 @@ export default function Signup() {
 
         </div>
 
+
+
         {/* Terms */}
-        <div className="mt-3 flex items-center space-x-2">
-          <input type="checkbox" />
-          <span className="text-sm">I agree to the Terms & Conditions.</span>
+        <div className="mt-3">
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.termsAccepted}
+              onChange={(e) => {
+                setForm({ ...form, termsAccepted: e.target.checked });
+                // Clear error immediately when checked
+                if (e.target.checked) setErrors({ ...errors, terms: null });
+              }}
+              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+            />
+            <span className="text-sm select-none">I agree to the Terms & Conditions.</span>
+          </label>
+          {errors.terms && <p className="text-red-600 text-xs mt-1 ml-6">{errors.terms}</p>}
         </div>
 
         {/* Error */}

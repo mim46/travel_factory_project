@@ -1,32 +1,33 @@
-import { FaSearch } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function Navbar() {
-    return (
-      <div className="w-full bg-white border-b border-blue-100 px-6 py-4 flex justify-between items-center shadow-sm">
-  
-        {/* Search Bar */}
-        <div className="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-lg w-96">
-          <FaSearch className="text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="bg-transparent focus:outline-none w-full text-gray-700"
-          />
-        </div>
-  
-        {/* Profile Section */}
-        <div className="flex items-center gap-3">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2202/2202112.png"
-            alt="admin-profile"
-            className="w-10 h-10 rounded-full border border-blue-300"
-          />
-          <span className="text-gray-700 font-medium">
-            Admin
-          </span>
-        </div>
-  
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning Admin!";
+    if (hour < 18) return "Good Afternoon Admin!";
+    return "Good Evening Admin!";
+  };
+
+  return (
+    <div className="w-full bg-white border-b border-blue-100 px-6 py-6 flex justify-between items-center shadow-sm">
+
+      {/* Greeting */}
+      <div>
+        <h2 className="text-xl font-bold text-[#1C7DA2]">
+          {getGreeting()}
+        </h2>
       </div>
-    );
-  }
-  
+
+      {/* Profile Section */}
+      <div className="flex items-center gap-3 mr-10">
+        <div className="text-[#1C7DA2]">
+          <FaUserCircle size={32} />
+        </div>
+        <span className="text-gray-700 font-medium">
+          Admin
+        </span>
+      </div>
+
+    </div>
+  );
+}
