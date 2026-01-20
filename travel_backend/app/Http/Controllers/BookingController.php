@@ -48,10 +48,16 @@ class BookingController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'persons' => $request->persons,
-            'travel_date' => $request->travel_date,
+            'booking_date' => $request->travel_date,
+            'number_of_people' => $request->persons,
+            'total_price' => $package->price * $request->persons,
             'special_request' => $request->special_request,
-            'status' => 'confirmed',
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'paid_amount' => 0,
+            'passport_number' => $request->passport_number,
+            'passport_expiry' => $request->passport_expiry,
+            'visa_status' => $request->visa_status,
         ]);
 
         return response()->json([

@@ -140,8 +140,9 @@ class PaymentController extends Controller
                 
                 $booking->update([
                     'payment_status' => $isAdvancePayment ? 'partially_paid' : 'paid',
-                    'status' => 'pending', // Always pending, admin will confirm
+                    'status' => 'pending',
                     'paid_amount' => $paymentAmount,
+                    'transaction_id' => $tranId,
                     'payment_details' => json_encode($request->all()),
                 ]);
 

@@ -59,14 +59,26 @@ export default function Gallery() {
       formData.append("image", imageFile);
     }
 
-    if (editData) {
-      await dispatch(updateGallery({ id: editData.id, formData }));
-    } else {
-      await dispatch(createGallery(formData));
-    }
+    try {
+      let result;
+      if (editData) {
+        result = await dispatch(updateGallery({ id: editData.id, formData }));
+      } else {
+        result = await dispatch(createGallery(formData));
+      }
 
-    setShowModal(false);
-    dispatch(fetchGalleries(filterCategory));
+      if (result.error) {
+        alert("Error: " + (result.error.message || "Failed to save image"));
+        return;
+      }
+
+      alert(editData ? "Image updated successfully!" : "Image added successfully!");
+      setShowModal(false);
+      dispatch(fetchGalleries(filterCategory));
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert("Error: " + (error.message || "Failed to save image"));
+    }
   };
 
   return (

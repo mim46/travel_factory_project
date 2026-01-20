@@ -1,29 +1,45 @@
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
 import { FaCreditCard, FaCheckCircle, FaCalendar, FaReceipt } from "react-icons/fa";
 
+const API_URL = "http://127.0.0.1:8000/api";
+
 export default function PaymentHistory() {
-  // TODO: Fetch payment history from backend
-  const payments = [
-    {
-      id: 1,
-      bookingId: 5,
-      packageName: "Cox's Bazar Beach Tour",
-      amount: 15000,
-      date: "2024-12-15",
-      status: "completed",
-      method: "bKash",
-      transactionId: "TXN123456789"
-    },
-    {
-      id: 2,
-      bookingId: 3,
-      packageName: "Sundarbans Adventure",
-      amount: 18000,
-      date: "2024-11-20",
-      status: "completed",
-      method: "Nagad",
-      transactionId: "TXN987654321"
-    },
-  ];
+  const { token } = useSelector((state) => state.auth);
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPaymentHistory();
+  }, []);
+
+  const fetchPaymentHistory = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/my-bookings`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Filter only paid bookings
+      const paidBookings = response.data.filter(
+        booking => booking.payment_status === 'paid' || booking.payment_status === 'partially_paid'
+      );
+      
+      setPayments(paidBookings);
+    } catch (error) {
+      console.error("Failed to fetch payment history:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-gray-500">Loading payment history...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -41,11 +57,11 @@ export default function PaymentHistory() {
         </div>
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
           <p className="text-white/80 text-sm mb-1">Total Spent</p>
-          <p className="text-4xl font-bold">৳{payments.reduce((sum, p) => sum + p.amount, 0).toLocaleString()}</p>
+          <p className="text-4xl font-bold">৳{payments.reduce((sum, p) => sum + p.paid_amount, 0).toLocaleString()}</p>
         </div>
         <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 rounded-xl shadow-lg text-white">
           <p className="text-white/80 text-sm mb-1">Last Payment</p>
-          <p className="text-4xl font-bold">৳{payments[0]?.amount.toLocaleString() || 0}</p>
+          <p className="text-4xl font-bold">৳{payments[0]?.paid_amount?.toLocaleString() || 0}</p>
         </div>
       </div>
 
@@ -67,27 +83,31 @@ export default function PaymentHistory() {
               {payments.map((payment) => (
                 <tr key={payment.id} className="hover:bg-blue-50 transition">
                   <td className="px-6 py-4 text-sm font-semibold text-gray-800">
-                    {payment.transactionId}
+                    {payment.transaction_id || `BK${payment.id.toString().padStart(6, '0')}`}
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-medium text-gray-800">{payment.packageName}</p>
-                    <p className="text-xs text-gray-500">Booking #{payment.bookingId}</p>
+                    <p className="font-medium text-gray-800">{payment.package?.title || 'Package'}</p>
+                    <p className="text-xs text-gray-500">Booking #{payment.id}</p>
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-gray-800">
-                    ৳{payment.amount.toLocaleString()}
+                    ৳{payment.paid_amount?.toLocaleString() || 0}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">
                     <div className="flex items-center gap-2">
                       <FaCreditCard className="text-blue-600" />
-                      {payment.method}
+                      {payment.payment_method || 'N/A'}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">
-                    {new Date(payment.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    {new Date(payment.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold flex items-center gap-1 w-fit">
-                      <FaCheckCircle /> Completed
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit ${
+                      payment.payment_status === 'paid' 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      <FaCheckCircle /> {payment.payment_status === 'paid' ? 'Completed' : 'Partially Paid'}
                     </span>
                   </td>
                 </tr>

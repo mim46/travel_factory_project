@@ -30,6 +30,8 @@ class GalleryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
             'category' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
@@ -43,6 +45,8 @@ class GalleryController extends Controller
         }
 
         $gallery = Gallery::create([
+            'title' => $request->title,
+            'description' => $request->description,
             'category' => $request->category,
             'image' => $imagePath,
         ]);
@@ -70,6 +74,8 @@ class GalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
 
         $request->validate([
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
             'category' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
@@ -88,6 +94,8 @@ class GalleryController extends Controller
         }
 
         $gallery->update([
+            'title' => $request->title,
+            'description' => $request->description,
             'category' => $request->category,
             'image' => $imagePath,
         ]);
