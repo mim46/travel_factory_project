@@ -26,7 +26,7 @@ import CountryPlace from "./pages/CountryPlace";
 import InternationalHome from "./pages/InternationalHome";
 import CountryPackages from "./pages/CountryPackages";
 
-// ⭐ ADMIN IMPORTS
+//  ADMIN IMPORTS
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import Users from "./admin/pages/Users";
@@ -45,14 +45,14 @@ import PageAbout from "./admin/pages/PageAbout";
 import PageContact from "./admin/pages/PageContact";
 import AdminReviews from "./admin/pages/Reviews";
 
-// ⭐ USER DASHBOARD IMPORTS
+//  USER DASHBOARD IMPORTS
 import UserLayout from "./user/UserLayout";
 import UserDashboard from "./user/UserDashboard";
 import MyBookings from "./user/pages/MyBookings";
 import MyProfile from "./user/pages/MyProfile";
 import PaymentHistory from "./user/pages/PaymentHistory";
 import Settings from "./user/pages/Settings";
-import UserMessages from "./user/pages/Messages";  // ✅ Renamed to UserMessages
+import UserMessages from "./user/pages/Messages";  
 
 
 export default function App() {
@@ -63,7 +63,7 @@ export default function App() {
         <Routes>
 
           {/* =============================
-              ⭐ ADMIN PANEL ROUTES
+               ADMIN PANEL ROUTES
           ============================== */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
@@ -85,7 +85,7 @@ export default function App() {
         </Route>
 
         {/* =============================
-            ⭐ USER DASHBOARD ROUTES
+             USER DASHBOARD ROUTES
         ============================== */}
         <Route path="/user" element={<UserLayout />}>
           <Route index element={<UserDashboard />} />
@@ -97,7 +97,7 @@ export default function App() {
         </Route>
 
         {/* =============================
-            ⭐ USER FRONTEND ROUTES
+            USER FRONTEND ROUTES
         ============================== */}
         <Route path="/" element={<MainLayout />}>
           

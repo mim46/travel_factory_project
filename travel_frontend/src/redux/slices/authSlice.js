@@ -21,7 +21,7 @@ export const loginUser = createAsyncThunk(
     try {
       console.log('🔵 Login attempt:', { email, password });
       
-      // ❌ Remove CSRF cookie fetch - না দরকার for token auth
+      //  Remove CSRF cookie fetch
       
       const response = await api.post('/login', { email, password });
       console.log('✅ Login response:', response.data);
@@ -50,7 +50,7 @@ export const registerUser = createAsyncThunk(
     try {
       console.log('🔵 Registration attempt:', userData);
       
-      // ❌ Remove CSRF cookie fetch
+      //  Remove CSRF cookie fetch
       
       const response = await api.post('/register', userData);
       console.log('✅ Registration response:', response.data);

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     // ===========================
-    // ⭐ REGISTER (Normal User)
+    //  REGISTER (Normal User)
     // ===========================
     public function register(Request $request)
     {
@@ -49,7 +49,7 @@ class AuthController extends Controller
     }
 
     // ===========================
-    // ⭐ LOGIN
+    //  LOGIN
     // ===========================
     public function login(Request $request)
     {
@@ -80,7 +80,7 @@ class AuthController extends Controller
     }
 
     // ===========================
-    // ⭐ LOGOUT
+    //  LOGOUT
     // ===========================
     public function logout(Request $request)
     {

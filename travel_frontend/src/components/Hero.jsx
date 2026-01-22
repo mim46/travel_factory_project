@@ -37,7 +37,7 @@ export default function Hero() {
 
       </div>
 
-      {/* ⭐ FLOATING SEARCH BAR HERE ⭐ */}
+      {/*  FLOATING SEARCH BAR HERE  */}
       <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 w-full max-w-6xl">
         <SearchBar />
       </div>
